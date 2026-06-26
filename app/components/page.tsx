@@ -9,9 +9,13 @@ interface Preview {
 
 ////////////////////////////////////////////////////////////
 
+// Components.
+import BrandLogo from '../../components/BrandLogo';
+
 // Preview list.
 const previews: Preview[] = [
-  { name: 'Brand Logo Primary', render: () => <div className='bg-brand-dark w-full h-full' /> },
+  { name: 'Brand Logo Primary', render: () => <BrandLogo className='w-full h-full' /> },
+  { name: 'Brand Logo Black', render: () => <BrandLogo variant='black' className='w-full h-full' /> },
 ];
 
 ////////////////////////////////////////////////////////////
