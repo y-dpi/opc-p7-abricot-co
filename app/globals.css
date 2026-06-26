@@ -1,20 +1,34 @@
 @import 'tailwindcss';
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Load font 'Inter' */
+@font-face {
+  font-family: 'Inter';
+  src: url('../assets/fonts/inter.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
 }
 
+/* Load font 'Manrope' */
+@font-face {
+  font-family: 'Manrope';
+  src: url('../assets/fonts/manrope.ttf') format('truetype');
+  font-weight: 600 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Tailwind themes */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+
+  /* Fonts */
+  --font-body: 'Inter', sans-serif;
+  --font-heading: 'Manrope', sans-serif;
 
   /* Brand */
-  --color-brand-orange: #FF8B42;
-  --color-brand-orange-light: #FFE8D9;
-  --color-brand-orange-dark: #D3590B;
+  --color-brand: #FF8B42;
+  --color-brand-light: #FFE8D9;
+  --color-brand-dark: #D3590B;
 
   /* Neutral */
   --color-grey-950: #0F0F0F;
@@ -35,17 +49,56 @@
   --color-info-light: #E0ECFF;
   --color-warning: #E08D00;
   --color-warning-light: #FFF0D7;
+
+  /* Headings */
+  --text-h1: 2.5rem;
+  --text-h1--font-weight: 700;
+  --text-h1--letter-spacing: normal;
+  --text-h2: 2rem;
+  --text-h2--font-weight: 700;
+  --text-h2--letter-spacing: normal;
+  --text-h3: 1.75rem;
+  --text-h3--font-weight: 600;
+  --text-h3--letter-spacing: normal;
+  --text-h4: 1.5rem;
+  --text-h4--font-weight: 600;
+  --text-h4--letter-spacing: normal;
+  --text-h5: 1.125rem;
+  --text-h5--font-weight: 600;
+  --text-h5--letter-spacing: normal;
+
+  /* Body */
+  --text-body-l: 1.125rem;
+  --text-body-l--font-weight: 400;
+  --text-body-l--letter-spacing: normal;
+  --text-body-m: 1rem;
+  --text-body-m--font-weight: 400;
+  --text-body-m--letter-spacing: normal;
+  --text-body-s: 0.875rem;
+  --text-body-s--font-weight: 400;
+  --text-body-s--letter-spacing: normal;
+  --text-body-xs: 0.75rem;
+  --text-body-xs--font-weight: 400;
+  --text-body-xs--letter-spacing: normal;
+  --text-body-2xs: 0.625rem;
+  --text-body-2xs--font-weight: 400;
+  --text-body-2xs--letter-spacing: normal;
+
+  /* Caption */
+  --text-caption-l: 0.875rem;
+  --text-caption-l--font-weight: 400;
+  --text-caption-l--letter-spacing: 2%;
+  --text-caption-m: 0.75rem;
+  --text-caption-m--font-weight: 400;
+  --text-caption-m--letter-spacing: 2%;
+  --text-caption-s: 0.625rem;
+  --text-caption-s--font-weight: 400;
+  --text-caption-s--letter-spacing: 2%;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* Global styling */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-grey-50);
+  color: var(--color-grey-950);
+  font-family: var(--font-body);
 }
