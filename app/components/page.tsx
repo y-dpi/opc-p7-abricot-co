@@ -25,9 +25,16 @@ function PreviewFrame({ name, children }: { name: string; children: ReactNode })
   return (
     <section className='flex flex-col gap-3'>
       <h5 className='font-heading text-h5 text-grey-600 uppercase tracking-widest'>{name}</h5>
-      <div className='overflow-auto p-6' style={{ resize: 'both', minHeight: '4rem', minWidth: '8rem', maxWidth: '100%' }}>
+      <div className='preview-frame relative overflow-auto p-6' style={{ resize: 'both', minHeight: '4rem', minWidth: '8rem', maxWidth: '100%' }}>
         <div className='size-full border-4 border-dashed border-grey-200 rounded-xl bg-white'>
           {children}
+        </div>
+        <div className='pointer-events-none absolute bottom-0 right-0 size-4 rounded-full bg-white border-2 border-grey-600 shadow-sm flex items-center justify-center'>
+          <svg width='12' height='12' viewBox='0 0 12 12' fill='none' xmlns='http://www.w3.org/2000/svg'>
+            <path d='M3.5 3.5L8.5 8.5' stroke='#6B7280' strokeWidth='1.5' strokeLinecap='round' />
+            <path d='M3.5 6V3.5H6' stroke='#6B7280' strokeWidth='1.5' strokeLinecap='round' strokeLinejoin='round' />
+            <path d='M8.5 6V8.5H6' stroke='#6B7280' strokeWidth='1.5' strokeLinecap='round' strokeLinejoin='round' />
+          </svg>
         </div>
       </div>
     </section>

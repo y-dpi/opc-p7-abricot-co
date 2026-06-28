@@ -96,6 +96,11 @@
   --text-caption-s--letter-spacing: 2%;
 }
 
+/* Hide native resize handle on preview frames */
+.preview-frame::-webkit-resizer {
+  display: none;
+}
+
 /* Global styling */
 body {
   background: var(--color-grey-50);
