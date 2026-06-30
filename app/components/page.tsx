@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 // Types.
 interface Preview {
   name: string;
+  size?: { width?: string; height?: string };
   render: () => ReactNode;
 }
 
@@ -14,18 +15,26 @@ import BrandLogo from '../../components/BrandLogo';
 
 // Preview list.
 const previews: Preview[] = [
-  { name: 'Brand Logo Primary', render: () => <BrandLogo className='w-full h-full' /> },
-  { name: 'Brand Logo Black', render: () => <BrandLogo variant='black' className='w-full h-full' /> },
+  {
+    name: 'Brand Logo Primary',
+    size: { width: '320px', height: '120px' },
+    render: () => <BrandLogo className='w-full h-full' />
+  },
+  {
+    name: 'Brand Logo Black',
+    size: { width: '320px', height: '120px' },
+    render: () => <BrandLogo variant='black' className='w-full h-full' />
+  },
 ];
 
 ////////////////////////////////////////////////////////////
 
 // Component preview frame.
-function PreviewFrame({ name, children }: { name: string; children: ReactNode }) {
+function PreviewFrame({ name, size, children }: { name: string; size?: { width?: string; height?: string }; children: ReactNode }) {
   return (
     <section className='flex flex-col gap-3'>
       <h5 className='font-heading text-h5 text-grey-600 uppercase tracking-widest'>{name}</h5>
-      <div className='preview-frame relative overflow-auto p-6' style={{ resize: 'both', minHeight: '4rem', minWidth: '8rem', maxWidth: '100%' }}>
+      <div className='preview-frame relative overflow-auto p-6' style={{ resize: 'both', minHeight: '4rem', minWidth: '8rem', maxWidth: '100%', width: size?.width, height: size?.height }}>
         <div className='size-full border-4 border-dashed border-grey-200 rounded-xl bg-white'>
           {children}
         </div>
@@ -57,8 +66,8 @@ export default function ComponentsPage() {
 
         {/* Component preview area */}
         <div className='flex flex-col gap-10'>
-          {previews.map(({ name, render }, index) => (
-            <PreviewFrame key={`${index}-${name}`} name={name}>
+          {previews.map(({ name, render, size }, index) => (
+            <PreviewFrame key={`${index}-${name}`} name={name} size={size}>
               {render()}
             </PreviewFrame>
           ))}
