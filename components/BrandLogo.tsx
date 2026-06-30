@@ -1,7 +1,5 @@
-// Dependencies.
 import Image from 'next/image';
 
-// Resources.
 import BrandLogoBlack from '../assets/images/brand-logo-black.svg';
 import BrandLogoPrimary from '../assets/images/brand-logo-primary.svg';
 import BrandLogoWhite from '../assets/images/brand-logo-white.svg';
@@ -16,7 +14,7 @@ export default function BrandLogo(props: {
 }) {
   return (
     <Image
-      className={props.className}
+      className='w-full h-full'
       alt='Abricot brand logo'
       loading='eager'
       src={
