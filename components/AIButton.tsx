@@ -11,7 +11,7 @@ export default function AIButton(props: {
 }) {
   return (
     <button className={cn(
-      'group flex items-center justify-center w-full h-full gap-3 bg-brand-light hover:bg-brand-dark',
+      'group flex items-center justify-center w-full h-full gap-3 bg-brand-light hover:bg-brand-dark cursor-pointer',
       props.compact ? 'rounded-full' : 'rounded-xl'
     )}>
       <Image
