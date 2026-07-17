@@ -1,0 +1,39 @@
+import Button from '../../../components/Button';
+import Input from '../../../components/Input';
+
+// @TODO placeholder account details (fetch current user later).
+const ACCOUNT = {
+  fullName: 'Amélie Dupont',
+  lastName: 'Amélie',
+  firstName: 'Amélie',
+  email: 'a.dupont@mail.com',
+  password: '••••••••••••'
+};
+
+// Account page.
+export default function AccountPage() {
+  return (
+    <main className='mx-auto w-full max-w-360 flex-1 px-6 py-16 lg:px-25'>
+      <section className='flex flex-col gap-10 rounded-xl border border-grey-200 bg-white px-5 md:px-15 py-10'>
+
+        {/* Header */}
+        <div className='flex flex-col gap-2'>
+          <h1 className='font-heading text-h5 text-grey-800'>Mon compte</h1>
+          <p className='font-body text-body-m text-grey-600'>{ACCOUNT.fullName}</p>
+        </div>
+
+        {/* Form */}
+        <div className='flex flex-col gap-6'>
+          <Input label='Nom' value={ACCOUNT.lastName} />
+          <Input label='Prénom' value={ACCOUNT.firstName} />
+          <Input label='Email' type='email' value={ACCOUNT.email} />
+          <Input label='Mot de passe' type='password' value={ACCOUNT.password} />
+        </div>
+
+        <div className='h-13 w-full max-w-61'>
+          <Button label='Modifier les informations' />
+        </div>
+      </section>
+    </main>
+  );
+}
