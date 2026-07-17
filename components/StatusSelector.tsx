@@ -6,12 +6,12 @@ import cn from './../utils/className';
 import Tag from './Tag';
 
 // Types.
-export type TaskStatus = 'todo' | 'in_progress' | 'done';
+export type TaskStatus = 'todo' | 'in-progress' | 'done';
 
 // Tag status mapping.
 const STATUSES: { value: TaskStatus, color: 'red' | 'orange' | 'green', label: string }[] = [
   { value: 'todo', color: 'red', label: 'À faire' },
-  { value: 'in_progress', color: 'orange', label: 'En cours' },
+  { value: 'in-progress', color: 'orange', label: 'En cours' },
   { value: 'done', color: 'green', label: 'Terminée' }
 ];
 
