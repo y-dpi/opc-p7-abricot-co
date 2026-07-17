@@ -27,7 +27,7 @@ function Tickbox(props: { checked: boolean }) {
 
 // Dropdown component.
 export default function Dropdown(props: {
-  label: string,
+  label?: string,
   value?: string | string[],
   placeholder?: string,
   multiplePlaceholder?: string,
@@ -106,7 +106,7 @@ export default function Dropdown(props: {
 
   return (
     <div className={cn('flex flex-col gap-2 w-full', props.className)}>
-      <span className='font-body text-body-s text-grey-950'>{props.label}</span>
+      {props.label && <span className='font-body text-body-s text-grey-950'>{props.label}</span>}
 
       <div
         ref={fieldRef}
