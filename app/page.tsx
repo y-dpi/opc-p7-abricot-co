@@ -1,8 +1,6 @@
-// Home page.
+import { redirect } from 'next/navigation';
+
+// Redirect the index route to the dashboard.
 export default function Home() {
-  return (
-    <>
-      <h1 className='font-heading text-h1'>Home page</h1>
-    </>
-  );
+  redirect('/dashboard');
 }
