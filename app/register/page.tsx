@@ -2,9 +2,8 @@ import Image from 'next/image';
 
 import SigninBackground from '../../assets/images/signin-background.png';
 import BrandLogo from '../../components/BrandLogo';
-import Button from '../../components/Button';
-import Input from '../../components/Input';
 import Link from '../../components/Link';
+import RegisterForm from '../../components/RegisterForm';
 
 // Register page.
 export default function RegisterPage() {
@@ -20,13 +19,7 @@ export default function RegisterPage() {
 
           <div className='flex flex-col items-center gap-8'>
             <h1 className='font-heading text-h1 text-brand-dark'>Inscription</h1>
-            <div className='flex w-full flex-col gap-7'>
-              <Input label='Email' type='email' />
-              <Input label='Mot de passe' type='password' />
-            </div>
-            <div className='h-13 w-[80%] self-center'>
-              <Button label='S’inscrire' />
-            </div>
+            <RegisterForm />
           </div>
 
           <div className='flex items-center justify-center gap-3'>

@@ -3,6 +3,7 @@ import cn from '../utils/className';
 // Text input component.
 export default function Input(props: {
   label: string,
+  name?: string,
   value?: string,
   placeholder?: string,
   type?: string,
@@ -13,6 +14,7 @@ export default function Input(props: {
       <span className='font-body text-body-s text-grey-950'>{props.label}</span>
       <div className='flex items-center gap-2 h-13 px-4 rounded border border-grey-200 bg-white'>
         <input
+          name={props.name}
           type={props.type ?? 'text'}
           defaultValue={props.value}
           placeholder={props.placeholder}

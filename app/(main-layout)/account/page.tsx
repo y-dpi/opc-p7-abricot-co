@@ -1,3 +1,4 @@
+import { logout } from '../../../actions/auth';
 import Button from '../../../components/Button';
 import Input from '../../../components/Input';
 
@@ -30,8 +31,13 @@ export default function AccountPage() {
           <Input label='Mot de passe' type='password' value={ACCOUNT.password} />
         </div>
 
-        <div className='h-13 w-full max-w-61'>
-          <Button label='Modifier les informations' />
+        <div className='flex flex-wrap items-center gap-4'>
+          <div className='h-13 w-full max-w-61'>
+            <Button label='Modifier les informations' />
+          </div>
+          <form action={logout} className='h-13 w-full max-w-45'>
+            <Button label='Se déconnecter' variant='outline' />
+          </form>
         </div>
       </section>
     </main>
