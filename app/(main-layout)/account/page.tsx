@@ -4,9 +4,7 @@ import Input from '../../../components/Input';
 
 // @TODO placeholder account details (fetch current user later).
 const ACCOUNT = {
-  fullName: 'Amélie Dupont',
-  lastName: 'Amélie',
-  firstName: 'Amélie',
+  name: 'Amélie Dupont',
   email: 'a.dupont@mail.com',
   password: '••••••••••••'
 };
@@ -20,13 +18,12 @@ export default function AccountPage() {
         {/* Header */}
         <div className='flex flex-col gap-2'>
           <h1 className='font-heading text-h5 text-grey-800'>Mon compte</h1>
-          <p className='font-body text-body-m text-grey-600'>{ACCOUNT.fullName}</p>
+          <p className='font-body text-body-m text-grey-600'>{ACCOUNT.name}</p>
         </div>
 
         {/* Form */}
         <div className='flex flex-col gap-6'>
-          <Input label='Nom' value={ACCOUNT.lastName} />
-          <Input label='Prénom' value={ACCOUNT.firstName} />
+          <Input label='Nom' value={ACCOUNT.name} />
           <Input label='Email' type='email' value={ACCOUNT.email} />
           <Input label='Mot de passe' type='password' value={ACCOUNT.password} />
         </div>
