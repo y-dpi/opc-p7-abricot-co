@@ -3,63 +3,51 @@
 import { redirect } from 'next/navigation';
 
 import { createSession, deleteSession } from '../middleware/session';
-
-// Base URL of the backend REST API.
-const API_URL = process.env.API_URL ?? 'http://localhost:8000';
+import { type AuthData, login as apiLogin, register as apiRegister } from '../models/auth';
+import { apiErrorMessage, type ApiResponse } from '../models/shared';
 
 // State returned to the auth forms via useActionState.
 type AuthState = { error?: string };
 
-// API auth response interface.
-interface AuthResponse {
-  success?: boolean;
-  message?: string;
-  data?: {
-    token?: string;
-    user?: { id: string; email: string; name: string | null };
-    errors?: { field: string; message: string }[];
-  };
-}
+// Shape of the login and register model wrappers.
+type AuthCall = (input: { email: string; password: string }) => Promise<ApiResponse<AuthData>>;
 
-// Read the most relevant error message of an API response.
-function apiError(body: AuthResponse, fallback: string): string {
-  return body.data?.errors?.[0]?.message ?? body.message ?? fallback;
-}
-
-// Call auth endpoints, open a session, and redirect on success.
-async function authenticate(endpoint: string, email: string, password: string, fallback: string): Promise<AuthState> {
-  let body: AuthResponse;
+// Authenticate, open a session, and redirect on success.
+async function authenticate(
+  call: AuthCall,
+  email: string,
+  password: string,
+  fallback: string,
+): Promise<AuthState> {
+  let body: ApiResponse<AuthData>;
   try {
-    const response = await fetch(`${API_URL}${endpoint}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    });
-    body = (await response.json()) as AuthResponse;
-    if (!response.ok || !body.success || !body.data?.token || !body.data.user) {
-      return { error: apiError(body, fallback) };
-    }
+    body = await call({ email, password });
   } catch {
     return { error: 'Impossible de contacter le serveur.' };
   }
 
-  // Set cookie and redirect.
-  await createSession({ token: body.data.token, user: body.data.user });
+  if (!body.success || !body.data?.token || !body.data.user) {
+    return { error: apiErrorMessage(body, fallback) };
+  }
+
+  // Open a session and redirect.
+  const { token, user } = body.data;
+  await createSession({ token, user: { id: user.id, email: user.email, name: user.name ?? null } });
   redirect('/dashboard');
 }
 
-// Authenticate an existing user.
+// Authenticate an existing user and open a session.
 export async function login(_prev: AuthState | undefined, formData: FormData): Promise<AuthState> {
   const email = String(formData.get('email') ?? '');
   const password = String(formData.get('password') ?? '');
-  return authenticate('/auth/login', email, password, 'Impossible de se connecter.');
+  return authenticate(apiLogin, email, password, 'Impossible de se connecter.');
 }
 
 // Register a new user and open a session.
 export async function register(_prev: AuthState | undefined, formData: FormData): Promise<AuthState> {
   const email = String(formData.get('email') ?? '');
   const password = String(formData.get('password') ?? '');
-  return authenticate('/auth/register', email, password, 'Impossible de s\'inscrire.');
+  return authenticate(apiRegister, email, password, 'Impossible de s\'inscrire.');
 }
 
 // End the session and return to the login page.
