@@ -31,11 +31,10 @@ export function createProject(
   token: string,
   input: CreateProjectInput,
 ): Promise<ApiResponse<{ project: Project }>> {
-  return request<ApiResponse<{ project: Project }>>('/projects', {
-    method: 'POST',
-    body: input,
-    token,
-  });
+  return request<ApiResponse<{ project: Project }>>(
+    '/projects',
+    { method: 'POST', body: input, token }
+  );
 }
 
 /**
@@ -45,7 +44,10 @@ export function createProject(
  * @returns The user projects with their userRole.
  */
 export function getProjects(token: string): Promise<ApiResponse<{ projects: Project[] }>> {
-  return request<ApiResponse<{ projects: Project[] }>>('/projects', { token });
+  return request<ApiResponse<{ projects: Project[] }>>(
+    '/projects',
+    { token }
+  );
 }
 
 /**
@@ -56,7 +58,10 @@ export function getProjects(token: string): Promise<ApiResponse<{ projects: Proj
  * @returns The project with their members, tasks, and userRole.
  */
 export function getProject(token: string, id: string): Promise<ApiResponse<{ project: Project }>> {
-  return request<ApiResponse<{ project: Project }>>(`/projects/${encodeURIComponent(id)}`, { token });
+  return request<ApiResponse<{ project: Project }>>(
+    `/projects/${encodeURIComponent(id)}`,
+    { token }
+  );
 }
 
 /**
@@ -72,11 +77,10 @@ export function updateProject(
   id: string,
   input: UpdateProjectInput,
 ): Promise<ApiResponse<{ project: Project }>> {
-  return request<ApiResponse<{ project: Project }>>(`/projects/${encodeURIComponent(id)}`, {
-    method: 'PUT',
-    body: input,
-    token,
-  });
+  return request<ApiResponse<{ project: Project }>>(
+    `/projects/${encodeURIComponent(id)}`,
+    { method: 'PUT', body: input, token }
+  );
 }
 
 /**
@@ -87,10 +91,10 @@ export function updateProject(
  * @returns A response with no data payload.
  */
 export function deleteProject(token: string, id: string): Promise<ApiResponse<undefined>> {
-  return request<ApiResponse<undefined>>(`/projects/${encodeURIComponent(id)}`, {
-    method: 'DELETE',
-    token,
-  });
+  return request<ApiResponse<undefined>>(
+    `/projects/${encodeURIComponent(id)}`,
+    { method: 'DELETE', token }
+  );
 }
 
 /**
@@ -106,11 +110,10 @@ export function addContributor(
   id: string,
   input: AddContributorInput,
 ): Promise<ApiResponse<undefined>> {
-  return request<ApiResponse<undefined>>(`/projects/${encodeURIComponent(id)}/contributors`, {
-    method: 'POST',
-    body: input,
-    token,
-  });
+  return request<ApiResponse<undefined>>(
+    `/projects/${encodeURIComponent(id)}/contributors`,
+    { method: 'POST', body: input, token }
+  );
 }
 
 /**
@@ -139,5 +142,8 @@ export function removeContributor(
  * @returns Projects with only the user assigned tasks.
  */
 export function getProjectsWithTasks(token: string): Promise<ApiResponse<{ projects: Project[] }>> {
-  return request<ApiResponse<{ projects: Project[] }>>('/dashboard/projects-with-tasks', { token });
+  return request<ApiResponse<{ projects: Project[] }>>(
+    '/dashboard/projects-with-tasks',
+    { token }
+  );
 }

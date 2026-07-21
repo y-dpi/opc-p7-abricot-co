@@ -39,7 +39,10 @@ export interface AuthData {
  * @returns The newly created user info and token.
  */
 export function register(input: RegisterInput): Promise<ApiResponse<AuthData>> {
-  return request<ApiResponse<AuthData>>('/auth/register', { method: 'POST', body: input });
+  return request<ApiResponse<AuthData>>(
+    '/auth/register',
+    { method: 'POST', body: input }
+  );
 }
 
 /**
@@ -49,7 +52,10 @@ export function register(input: RegisterInput): Promise<ApiResponse<AuthData>> {
  * @returns The user info and token.
  */
 export function login(input: LoginInput): Promise<ApiResponse<AuthData>> {
-  return request<ApiResponse<AuthData>>('/auth/login', { method: 'POST', body: input });
+  return request<ApiResponse<AuthData>>(
+    '/auth/login',
+    { method: 'POST', body: input }
+  );
 }
 
 /**
@@ -59,7 +65,10 @@ export function login(input: LoginInput): Promise<ApiResponse<AuthData>> {
  * @returns The user profile info.
  */
 export function getProfile(token: string): Promise<ApiResponse<{ user: AuthUser }>> {
-  return request<ApiResponse<{ user: AuthUser }>>('/auth/profile', { token });
+  return request<ApiResponse<{ user: AuthUser }>>(
+    '/auth/profile',
+    { token }
+  );
 }
 
 /**
@@ -73,11 +82,10 @@ export function updateProfile(
   token: string,
   input: UpdateProfileInput,
 ): Promise<ApiResponse<{ user: AuthUser }>> {
-  return request<ApiResponse<{ user: AuthUser }>>('/auth/profile', {
-    method: 'PUT',
-    body: input,
-    token,
-  });
+  return request<ApiResponse<{ user: AuthUser }>>(
+    '/auth/profile',
+    { method: 'PUT', body: input, token }
+  );
 }
 
 /**
@@ -91,11 +99,10 @@ export function updatePassword(
   token: string,
   input: UpdatePasswordInput,
 ): Promise<ApiResponse<undefined>> {
-  return request<ApiResponse<undefined>>('/auth/password', {
-    method: 'PUT',
-    body: input,
-    token,
-  });
+  return request<ApiResponse<undefined>>(
+    '/auth/password',
+    { method: 'PUT', body: input, token }
+  );
 }
 
 /**
@@ -109,8 +116,8 @@ export function searchUsers(
   token: string,
   query: string,
 ): Promise<ApiResponse<{ users: UserSummary[] }>> {
-  return request<ApiResponse<{ users: UserSummary[] }>>('/users/search', {
-    token,
-    query: { query },
-  });
+  return request<ApiResponse<{ users: UserSummary[] }>>(
+    '/users/search',
+    { token, query: { query } }
+  );
 }

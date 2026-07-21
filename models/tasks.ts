@@ -135,7 +135,10 @@ export function deleteTask(
  * @returns The user assigned tasks with project, assignees, and comments.
  */
 export function getAssignedTasks(token: string): Promise<ApiResponse<{ tasks: Task[] }>> {
-  return request<ApiResponse<{ tasks: Task[] }>>('/dashboard/assigned-tasks', { token });
+  return request<ApiResponse<{ tasks: Task[] }>>(
+    '/dashboard/assigned-tasks',
+    { token }
+  );
 }
 
 /**
@@ -145,5 +148,8 @@ export function getAssignedTasks(token: string): Promise<ApiResponse<{ tasks: Ta
  * @returns Aggregated task and project counts.
  */
 export function getDashboardStats(token: string): Promise<ApiResponse<{ stats: DashboardStats }>> {
-  return request<ApiResponse<{ stats: DashboardStats }>>('/dashboard/stats', { token });
+  return request<ApiResponse<{ stats: DashboardStats }>>(
+    '/dashboard/stats',
+    { token }
+  );
 }
