@@ -4,6 +4,7 @@ import UserIcon from './UserIcon';
 // Comment input field component.
 export default function CommentField(props: {
   initials: string,
+  name?: string,
   value?: string,
   placeholder?: string,
   className?: string
@@ -14,6 +15,7 @@ export default function CommentField(props: {
       <div className='flex-1 min-w-0 flex items-center px-4 py-5 rounded-xl bg-grey-50'>
         <input
           type='text'
+          name={props.name}
           defaultValue={props.value}
           placeholder={props.placeholder ?? 'Ajouter un commentaire...'}
           className='flex-1 min-w-0 bg-transparent font-body text-body-2xs text-grey-950 placeholder:text-grey-600 outline-none'

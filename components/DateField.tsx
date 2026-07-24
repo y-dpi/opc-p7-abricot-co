@@ -36,6 +36,7 @@ function formatDate(date: Date) {
 export default function DateField(props: {
   label: string,
   value?: Date,
+  name?: string,
   className?: string
 }) {
   const [date, setDate] = useState<Date | undefined>(props.value);
@@ -67,6 +68,7 @@ export default function DateField(props: {
           id={inputId}
           ref={inputRef}
           type='date'
+          name={props.name}
           value={toInputValue(date)}
           onChange={(event) => setDate(fromInputValue(event.target.value))}
           className='sr-only'

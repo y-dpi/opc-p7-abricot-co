@@ -1,26 +1,23 @@
+import { createProject } from '../../../actions/projects';
 import CalendarPrimary from '../../../assets/images/calendar-icon-primary.svg';
 import CheckboxPrimary from '../../../assets/images/checkbox-icon-primary.svg';
 import SearchIcon from '../../../assets/images/search-icon-black.svg';
-import Button from '../../../components/Button';
 import Chips from '../../../components/Chips';
 import ColoredIcon from '../../../components/ColoredIcon';
+import CreateProjectControl from '../../../components/CreateProjectControl';
 import TaskCard from '../../../components/TaskCard';
-
-// @TODO placeholder greeting name (fetch current user later).
-const USER_NAME = 'Alice Dupont';
-
-// @TODO placeholder assigned tasks (fetch later).
-const TASKS = [
-  { title: 'Nom de la tâche', description: 'Description de la tâche', status: 'todo' as const, projectName: 'Nom du projet', date: '9 mars', commentsCount: 2 },
-  { title: 'Nom de la tâche', description: 'Description de la tâche', status: 'in-progress' as const, projectName: 'Nom du projet', date: '9 mars', commentsCount: 2 },
-  { title: 'Nom de la tâche', description: 'Description de la tâche', status: 'done' as const, projectName: 'Nom du projet', date: '9 mars', commentsCount: 2 },
-  { title: 'Nom de la tâche', description: 'Description de la tâche', status: 'todo' as const, projectName: 'Nom du projet', date: '9 mars', commentsCount: 2 },
-  { title: 'Nom de la tâche', description: 'Description de la tâche', status: 'in-progress' as const, projectName: 'Nom du projet', date: '9 mars', commentsCount: 2 },
-  { title: 'Nom de la tâche', description: 'Description de la tâche', status: 'done' as const, projectName: 'Nom du projet', date: '9 mars', commentsCount: 2 },
-];
+import { requireSession } from '../../../middleware/session';
+import { getAssignedTasks } from '../../../models/tasks';
+import { formatDate, toUiStatus } from '../../../utils/task';
 
 // Dashboard page.
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const { token, user } = await requireSession();
+  const userName = user.name ?? user.email;
+
+  const body = await getAssignedTasks(token);
+  const tasks = body.success && body.data?.tasks ? body.data.tasks : [];
+
   return (
     <main className='mx-auto w-full max-w-360 flex-1 px-6 py-16 lg:px-25'>
       <div className='flex flex-col gap-8'>
@@ -29,7 +26,7 @@ export default function DashboardPage() {
         <div className='flex flex-col gap-4'>
           <h1 className='font-heading text-h4 text-grey-800'>Tableau de bord</h1>
           <p className='font-body text-body-l text-grey-950'>
-            Bonjour {USER_NAME}, voici un aperçu de vos projets et tâches
+            Bonjour {userName}, voici un aperçu de vos projets et tâches
           </p>
         </div>
 
@@ -39,9 +36,7 @@ export default function DashboardPage() {
             <Chips label='Liste' active icon={<ColoredIcon src={CheckboxPrimary} color='var(--color-brand-dark)' />} />
             <Chips label='Kanban' href='/dashboard/kanban' icon={<ColoredIcon src={CalendarPrimary} color='var(--color-brand-dark)' />} className='border border-grey-200' />
           </div>
-          <div className='h-13 w-45'>
-            <Button label='+ Créer un projet' />
-          </div>
+          <CreateProjectControl action={createProject} />
         </div>
 
         {/* Task list card */}
@@ -57,19 +52,24 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className='flex flex-col gap-4'>
-            {TASKS.map((task, index) => (
-              <TaskCard
-                key={index}
-                status={task.status}
-                title={task.title}
-                description={task.description}
-                projectName={task.projectName}
-                date={task.date}
-                commentsCount={task.commentsCount}
-              />
-            ))}
-          </div>
+          {tasks.length === 0 ? (
+            <p className='font-body text-body-m text-grey-600'>Aucune tâche assignée.</p>
+          ) : (
+            <div className='flex flex-col gap-4'>
+              {tasks.map((task) => (
+                <TaskCard
+                  key={task.id}
+                  status={toUiStatus(task.status)}
+                  title={task.title}
+                  description={task.description ?? ''}
+                  projectName={task.project?.name ?? 'Projet'}
+                  date={formatDate(task.dueDate)}
+                  commentsCount={task.comments?.length ?? 0}
+                  href={`/projects/${task.projectId}`}
+                />
+              ))}
+            </div>
+          )}
         </section>
       </div>
     </main>

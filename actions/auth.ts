@@ -1,10 +1,12 @@
 'use server';
 
+import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
 import { createSession, deleteSession } from '../middleware/session';
-import { type AuthData, login as apiLogin, register as apiRegister } from '../models/auth';
+import { type AuthData, login as apiLogin, register as apiRegister, updateProfile as apiUpdateProfile } from '../models/auth';
 import { apiErrorMessage, type ApiResponse } from '../models/shared';
+import { type FormState, requireToken } from './shared';
 
 // State returned to the auth forms via useActionState.
 type AuthState = { error?: string };
@@ -48,6 +50,32 @@ export async function register(_prev: AuthState | undefined, formData: FormData)
   const email = String(formData.get('email') ?? '');
   const password = String(formData.get('password') ?? '');
   return authenticate(apiRegister, email, password, 'Impossible de s\'inscrire.');
+}
+
+// Update the current user name and email.
+export async function updateProfile(_prev: FormState | undefined, formData: FormData): Promise<FormState> {
+  const token = await requireToken();
+  const name = String(formData.get('name') ?? '').trim();
+  const email = String(formData.get('email') ?? '').trim();
+
+  let body;
+  try {
+    body = await apiUpdateProfile(token, { name: name || undefined, email: email || undefined });
+  } catch {
+    return { error: 'Impossible de contacter le serveur.' };
+  }
+
+  if (!body.success || !body.data?.user) {
+    return { error: apiErrorMessage(body, 'Impossible de modifier les informations.') };
+  }
+
+  // Refresh the session so the header and greeting reflect the new details.
+  const { user } = body.data;
+  await createSession({ token, user: { id: user.id, email: user.email, name: user.name ?? null } });
+
+  revalidatePath('/account');
+  revalidatePath('/dashboard');
+  return { ok: true };
 }
 
 // End the session and return to the login page.

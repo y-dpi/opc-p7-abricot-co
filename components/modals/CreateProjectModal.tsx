@@ -1,40 +1,54 @@
+'use client';
+
 import Button from '../Button';
-import Dropdown from '../Dropdown';
 import Input from '../Input';
 import Modal from '../Modal';
 
-// @TODO placeholder project being created (fetch project later).
-const PROJECT = {
-  title: 'Nom du projet',
-  description: 'Développement de la nouvelle version de l\'API REST avec authentification JWT',
-  contributors: ['Alice Dupont', 'Bertrand Legrand', 'Anne Bournes', 'Camille Vidal'],
-  selectedContributors: ['Alice Dupont', 'Bertrand Legrand'] // @TODO use multiple initial selection in dropdown.
-};
-
 // Create-project modal component.
-export default function CreateProjectModal() {
-  return (
-    <Modal
-      mock
-      title='Créer un projet'
-      bottom={
-        <div className='h-13 w-45'>
-          <Button label='Ajouter un projet' disabled />
+export default function CreateProjectModal(props: {
+  formAction?: (formData: FormData) => void,
+  pending?: boolean,
+  error?: string,
+  onClose?: () => void,
+}) {
+
+  // Preview mode for the component gallery.
+  if (!props.formAction) {
+    return (
+      <Modal
+        mock
+        title='Créer un projet'
+        bottom={<div className='h-13 w-45'><Button label='Ajouter un projet' disabled /></div>}
+      >
+        <div className='flex flex-col gap-6'>
+          <Input label='Titre*' />
+          <Input label='Description*' />
+          <Input label='Contributeurs' placeholder='Emails séparés par des virgules' />
         </div>
-      }
-    >
-      <div className='flex flex-col gap-6'>
-        <Input label='Titre*' value={PROJECT.title} />
-        <Input label='Description*' value={PROJECT.description} />
-        <Dropdown
-          label='Contributeurs'
-          placeholder='Choisir un ou plusieurs collaborateurs'
-          options={PROJECT.contributors}
-          value={PROJECT.selectedContributors}
-          multiple
-          multiplePlaceholder='collaborateurs'
-        />
-      </div>
-    </Modal>
+      </Modal>
+    );
+  }
+
+  return (
+    <form action={props.formAction}>
+      <Modal
+        title='Créer un projet'
+        onClose={props.onClose}
+        bottom={
+          <div className='flex flex-col gap-4'>
+            {props.error && <p className='font-body text-body-s text-error'>{props.error}</p>}
+            <div className='h-13 w-45'>
+              <Button type='submit' label={props.pending ? 'Ajout…' : 'Ajouter un projet'} disabled={props.pending} />
+            </div>
+          </div>
+        }
+      >
+        <div className='flex flex-col gap-6'>
+          <Input label='Titre*' name='name' />
+          <Input label='Description*' name='description' />
+          <Input label='Contributeurs' name='contributors' placeholder='Emails séparés par des virgules' />
+        </div>
+      </Modal>
+    </form>
   );
 }

@@ -16,10 +16,15 @@ export default function Modal(props: {
   className?: string,
   mock?: boolean
   bottom?: ReactNode,
+  onClose?: () => void,
 }) {
   const [open, setOpen] = useState(true);
 
-  if (!props.mock && !open) return null;
+  // When an onClose is given the parent owns the visibility.
+  const controlled = props.onClose !== undefined;
+  const close = () => (controlled ? props.onClose!() : setOpen(false));
+
+  if (!props.mock && !controlled && !open) return null;
 
   const panel = (
     <div className={cn(
@@ -27,7 +32,7 @@ export default function Modal(props: {
       props.className
     )}>
       <span
-        onClick={props.mock ? undefined : () => setOpen(false)}
+        onClick={props.mock ? undefined : close}
         className='absolute right-9 top-9 block h-4 w-4 text-grey-950 hover:cursor-pointer'
       >
         <ColoredIcon src={CloseIcon} color='currentColor' />
@@ -52,7 +57,7 @@ export default function Modal(props: {
   return (
     <div
       onScroll={(e) => e.stopPropagation()}
-      onClick={() => setOpen(false)}
+      onClick={close}
       className='fixed inset-0 z-50 flex items-center overflow-scroll overscroll-contain scrollbar-none justify-center bg-grey-950/50 p-4'
     >
       <div onClick={(e) => e.stopPropagation()} className='w-full max-w-150'>

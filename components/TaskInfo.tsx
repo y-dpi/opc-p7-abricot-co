@@ -1,15 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 
 import CalendarGrey from '../assets/images/calendar-icon-grey.svg';
 import DownBrackets from '../assets/images/down-angle-brackets-icon-black.svg';
 import cn from '../utils/className';
+import type { FormAction } from '../utils/formState';
 import Button from './Button';
 import ColoredIcon from './ColoredIcon';
 import Comment from './Comment';
 import CommentField from './CommentField';
 import IconButton from './IconButton';
+import EditTaskModal from './modals/EditTaskModal';
 import Tag from './Tag';
 import UserIcon from './UserIcon';
 
@@ -27,6 +29,9 @@ interface TaskComment {
   timestamp: string;
   text: string;
 }
+
+// Member option shown in the edit modal.
+type Member = { label: string, value: string };
 
 // Tag status mapping.
 const STATUS: Record<TaskStatus, { label: string, color: 'red' | 'orange' | 'green' }> = {
@@ -46,10 +51,16 @@ export default function TaskInfo(props: {
   description?: string,
   status?: TaskStatus,
   dueDate?: string,
+  dueDateValue?: Date,
   commentsCount?: number,
   assignees?: Assignee[],
   comments?: TaskComment[],
   currentUserInitials?: string,
+  members?: Member[],
+  assigneeIds?: string[],
+  updateAction?: FormAction,
+  deleteAction?: () => Promise<void>,
+  commentAction?: FormAction,
   className?: string
 }) {
   const title = props.title ?? 'Tâche sans nom';
@@ -61,6 +72,29 @@ export default function TaskInfo(props: {
   const commentsCount = props.commentsCount ?? comments.length;
 
   const [open, setOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [deleting, startDelete] = useTransition();
+  const [commentError, setCommentError] = useState<string>();
+  const [commentPending, startComment] = useTransition();
+  const [editError, setEditError] = useState<string>();
+  const [editPending, startEdit] = useTransition();
+
+  // Post a comment on the task.
+  function submitComment(formData: FormData) {
+    startComment(async () => {
+      const result = await props.commentAction!(undefined, formData);
+      setCommentError(result?.error);
+    });
+  }
+
+  // Run the update action, then close the edit modal on success.
+  function submitEdit(formData: FormData) {
+    startEdit(async () => {
+      const result = await props.updateAction!(undefined, formData);
+      if (result?.ok) setEditOpen(false);
+      else setEditError(result?.error);
+    });
+  }
 
   const shell = 'w-full rounded-xl border border-grey-200 bg-white px-10 py-[25px]';
 
@@ -79,7 +113,7 @@ export default function TaskInfo(props: {
           <p className='font-body text-body-s text-grey-600'>{description}</p>
         </div>
         <div className='flex flex-col gap-2 shrink-0 object-center items-center justify-center content-center'>
-          <IconButton icon='see-more' className='w-14 h-14' />
+          <IconButton icon='see-more' className='w-14 h-14' onClick={props.updateAction ? () => setEditOpen(true) : undefined} />
           <div className='hidden @max-[350px]:block'>
             <StatusTag status={status} compact={true} />
           </div>
@@ -141,13 +175,42 @@ export default function TaskInfo(props: {
               text={comment.text}
             />
           ))}
-          {props.currentUserInitials && <>
+          {props.currentUserInitials && props.commentAction && (
+            <form action={submitComment} className='flex w-full flex-col items-end gap-4'>
+              <CommentField key={commentsCount} initials={props.currentUserInitials} name='content' />
+              {commentError && (
+                <p className='font-body text-body-s text-error self-stretch'>{commentError}</p>
+              )}
+              <div className='h-13 w-full max-w-52'>
+                <Button type='submit' label={commentPending ? 'Envoi…' : 'Envoyer'} disabled={commentPending} />
+              </div>
+            </form>
+          )}
+          {props.currentUserInitials && !props.commentAction && <>
             <CommentField initials={props.currentUserInitials} />
             <div className='h-13 w-full max-w-52'>
               <Button label='Envoyer' disabled />
             </div>
           </>}
         </div>
+      )}
+
+      {/* Edit modal */}
+      {editOpen && props.updateAction && (
+        <EditTaskModal
+          title={props.title}
+          description={props.description}
+          dueDate={props.dueDateValue}
+          status={status}
+          members={props.members}
+          assigneeIds={props.assigneeIds}
+          formAction={submitEdit}
+          pending={editPending}
+          error={editError}
+          onClose={() => setEditOpen(false)}
+          onDelete={props.deleteAction ? () => startDelete(() => props.deleteAction!()) : undefined}
+          deleting={deleting}
+        />
       )}
     </article>
   );

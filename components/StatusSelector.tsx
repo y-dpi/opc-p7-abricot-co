@@ -17,12 +17,14 @@ const STATUSES: { value: TaskStatus, color: 'red' | 'orange' | 'green', label: s
 
 // Task status selector component.
 export default function StatusSelector(props: {
-  value?: TaskStatus
+  value?: TaskStatus,
+  name?: string
 }) {
   const [status, setStatus] = useState<TaskStatus>(props.value ?? 'todo');
 
   return (
     <div className='flex flex-col gap-4'>
+      {props.name && <input type='hidden' name={props.name} value={status} />}
       <span className='font-body text-body-s text-grey-950'>Statut :</span>
       <div className='flex flex-wrap gap-2'>
         {STATUSES.map((s) => (

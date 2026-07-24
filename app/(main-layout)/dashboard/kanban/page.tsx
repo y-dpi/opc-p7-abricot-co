@@ -1,34 +1,33 @@
+import { createProject } from '../../../../actions/projects';
 import CalendarPrimary from '../../../../assets/images/calendar-icon-primary.svg';
 import CheckboxPrimary from '../../../../assets/images/checkbox-icon-primary.svg';
-import Button from '../../../../components/Button';
 import Chips from '../../../../components/Chips';
 import ColoredIcon from '../../../../components/ColoredIcon';
+import CreateProjectControl from '../../../../components/CreateProjectControl';
 import Tag from '../../../../components/Tag';
 import TaskCard from '../../../../components/TaskCard';
-
-// @TODO placeholder greeting name (fetch current user later).
-const USER_NAME = 'Alice Dupont';
-
-// @TODO placeholder assigned tasks (fetch later).
-const TASKS = [
-  { title: 'Nom de la tâche', description: 'Description de la tâche', status: 'todo' as const, projectName: 'Nom du projet', date: '9 mars', commentsCount: 2 },
-  { title: 'Nom de la tâche', description: 'Description de la tâche', status: 'in-progress' as const, projectName: 'Nom du projet', date: '9 mars', commentsCount: 2 },
-  { title: 'Nom de la tâche', description: 'Description de la tâche', status: 'in-progress' as const, projectName: 'Nom du projet', date: '9 mars', commentsCount: 2 },
-  { title: 'Nom de la tâche', description: 'Description de la tâche', status: 'done' as const, projectName: 'Nom du projet', date: '9 mars', commentsCount: 2 },
-  { title: 'Nom de la tâche', description: 'Description de la tâche', status: 'todo' as const, projectName: 'Nom du projet', date: '9 mars', commentsCount: 2 },
-  { title: 'Nom de la tâche', description: 'Description de la tâche', status: 'in-progress' as const, projectName: 'Nom du projet', date: '9 mars', commentsCount: 2 },
-  { title: 'Nom de la tâche', description: 'Description de la tâche', status: 'done' as const, projectName: 'Nom du projet', date: '9 mars', commentsCount: 2 },
-];
-
-// Sort tasks by status.
-const columns = [
-  { title: 'À faire', tasks: TASKS.filter(task => task.status === 'todo') },
-  { title: 'En cours', tasks: TASKS.filter(task => task.status === 'in-progress') },
-  { title: 'Terminées', tasks: TASKS.filter(task => task.status === 'done') }
-];
+import { requireSession } from '../../../../middleware/session';
+import { getAssignedTasks } from '../../../../models/tasks';
+import { formatDate, toUiStatus } from '../../../../utils/task';
 
 // Dashboard page (kanban).
-export default function KanbanPage() {
+export default async function KanbanPage() {
+  const { token, user } = await requireSession();
+  const userName = user.name ?? user.email;
+
+  const body = await getAssignedTasks(token);
+  const tasks = body.success && body.data?.tasks ? body.data.tasks : [];
+
+  // Sort tasks into columns by status.
+  const columns = [
+    { title: 'À faire', status: 'todo' as const },
+    { title: 'En cours', status: 'in-progress' as const },
+    { title: 'Terminées', status: 'done' as const },
+  ].map((column) => ({
+    ...column,
+    tasks: tasks.filter((task) => toUiStatus(task.status) === column.status),
+  }));
+
   return (
     <main className='mx-auto w-full max-w-360 flex-1 px-6 py-16 lg:px-25'>
       <div className='flex flex-col gap-8'>
@@ -37,7 +36,7 @@ export default function KanbanPage() {
         <div className='flex flex-col gap-4'>
           <h1 className='font-heading text-h4 text-grey-800'>Tableau de bord</h1>
           <p className='font-body text-body-l text-grey-950'>
-            Bonjour {USER_NAME}, voici un aperçu de vos projets et tâches
+            Bonjour {userName}, voici un aperçu de vos projets et tâches
           </p>
         </div>
 
@@ -47,9 +46,7 @@ export default function KanbanPage() {
             <Chips label='Liste' href='/dashboard' icon={<ColoredIcon src={CheckboxPrimary} color='var(--color-brand-dark)' />} className='border border-grey-200' />
             <Chips label='Kanban' active icon={<ColoredIcon src={CalendarPrimary} color='var(--color-brand-dark)' />} />
           </div>
-          <div className='h-13 w-45'>
-            <Button label='+ Créer un projet' />
-          </div>
+          <CreateProjectControl action={createProject} />
         </div>
 
         {/* Columns */}
@@ -64,15 +61,16 @@ export default function KanbanPage() {
                 <Tag color='grey' label={String(column.tasks.length)} />
               </div>
               <div className='flex flex-col gap-4'>
-                {column.tasks.map((task, index) => (
+                {column.tasks.map((task) => (
                   <TaskCard
-                    key={index}
-                    status={task.status}
+                    key={task.id}
+                    status={column.status}
                     title={task.title}
-                    description={task.description}
-                    projectName={task.projectName}
-                    date={task.date}
-                    commentsCount={task.commentsCount}
+                    description={task.description ?? ''}
+                    projectName={task.project?.name ?? 'Projet'}
+                    date={formatDate(task.dueDate)}
+                    commentsCount={task.comments?.length ?? 0}
+                    href={`/projects/${task.projectId}`}
                   />
                 ))}
               </div>

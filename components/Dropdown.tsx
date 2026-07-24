@@ -25,17 +25,23 @@ function Tickbox(props: { checked: boolean }) {
   );
 }
 
+// Option accepted by the dropdown (a plain label, or a label paired with a submit value).
+type Option = string | { label: string, value: string };
+
 // Dropdown component.
 export default function Dropdown(props: {
   label?: string,
+  name?: string,
   value?: string | string[],
   placeholder?: string,
   multiplePlaceholder?: string,
-  options?: string[],
+  options?: Option[],
   multiple?: boolean,
   className?: string
 }) {
-  const options = props.options ?? [];
+  const options = (props.options ?? []).map((option) =>
+    typeof option === 'string' ? { label: option, value: option } : option
+  );
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<string[]>(
     props.value == null ? [] : Array.isArray(props.value) ? props.value : [props.value]
@@ -46,24 +52,27 @@ export default function Dropdown(props: {
   const listId = useId();
   const hasValue = selected.length > 0;
 
+  // Label matching a selected value.
+  const labelOf = (value: string) => options.find((option) => option.value === value)?.label ?? value;
+
   // Display value of the field.
   const display = !hasValue
     ? props.placeholder
     : props.multiple && selected.length > 1
       ? `${selected.length} ${props.multiplePlaceholder ?? ''}`.trim()
-      : selected[0];
+      : labelOf(selected[0]);
 
-  // Pick (single) or toggle (multiple) an option.
-  function choose(option: string) {
+  // Pick (single) or toggle (multiple) an option value.
+  function choose(value: string) {
     if (props.multiple) {
       setSelected((current) =>
-        current.includes(option)
-          ? current.filter((value) => value !== option)
-          : [...current, option]
+        current.includes(value)
+          ? current.filter((item) => item !== value)
+          : [...current, value]
       );
       return;
     }
-    setSelected([option]);
+    setSelected([value]);
     setOpen(false);
   }
 
@@ -107,6 +116,11 @@ export default function Dropdown(props: {
   return (
     <div className={cn('flex flex-col gap-2 w-full', props.className)}>
       {props.label && <span className='font-body text-body-s text-grey-950'>{props.label}</span>}
+
+      {/* Submit the current selection when used inside a form. */}
+      {props.name && selected.map((value) => (
+        <input key={value} type='hidden' name={props.name} value={value} />
+      ))}
 
       <div
         ref={fieldRef}
@@ -164,12 +178,12 @@ export default function Dropdown(props: {
           className='z-50 max-h-60 overflow-auto rounded border border-grey-200 bg-white py-1 shadow-[0_4px_12px_1px_rgba(0,0,0,0.08)]'
         >
           {options.map((option) => {
-            const isSelected = selected.includes(option);
+            const isSelected = selected.includes(option.value);
             return (
-              <li key={option} role='option' aria-selected={isSelected}>
+              <li key={option.value} role='option' aria-selected={isSelected}>
                 <button
                   type='button'
-                  onClick={() => choose(option)}
+                  onClick={() => choose(option.value)}
                   className={cn(
                     'flex w-full cursor-pointer items-center px-4 py-2 text-left font-body text-body-xs',
                     props.multiple ? 'gap-4' : 'gap-2',
@@ -177,7 +191,7 @@ export default function Dropdown(props: {
                   )}
                 >
                   {props.multiple && <Tickbox checked={isSelected} />}
-                  <span className='min-w-0 truncate'>{option}</span>
+                  <span className='min-w-0 truncate'>{option.label}</span>
                 </button>
               </li>
             );

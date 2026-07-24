@@ -69,6 +69,7 @@ export default function TaskCard(props: {
   projectName?: string,
   date?: string,
   commentsCount?: number,
+  href?: string,
   className?: string
 }) {
   const title = props.title ?? 'Tâche sans nom';
@@ -92,7 +93,7 @@ export default function TaskCard(props: {
         <div className='flex flex-col items-end gap-9'>
           <StatusTag status={status} />
           <div className='h-13 w-30'>
-            <Button label='Voir' />
+            <Button label='Voir' href={props.href} />
           </div>
         </div>
       </div>
@@ -112,7 +113,7 @@ export default function TaskCard(props: {
           <MetaRow projectName={projectName} date={date} commentsCount={commentsCount} />
         </div>
         <div className='h-13 w-full max-w-30'>
-          <Button label='Voir' />
+          <Button label='Voir' href={props.href} />
         </div>
       </div>
     </article>

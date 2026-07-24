@@ -1,51 +1,47 @@
+import { notFound } from 'next/navigation';
+
+import { createComment } from '../../../../actions/comments';
+import { deleteProject, updateProject } from '../../../../actions/projects';
+import { createTask, deleteTask, updateTask } from '../../../../actions/tasks';
 import CalendarPrimary from '../../../../assets/images/calendar-icon-primary.svg';
 import CheckboxPrimary from '../../../../assets/images/checkbox-icon-primary.svg';
 import AIButton from '../../../../components/AIButton';
-import Button from '../../../../components/Button';
 import Chips from '../../../../components/Chips';
 import ColoredIcon from '../../../../components/ColoredIcon';
+import CreateTaskControl from '../../../../components/CreateTaskControl';
 import Dropdown from '../../../../components/Dropdown';
+import EditProjectControl from '../../../../components/EditProjectControl';
 import IconButton from '../../../../components/IconButton';
-import Link from '../../../../components/Link';
 import SearchBar from '../../../../components/SearchBar';
 import Tag from '../../../../components/Tag';
 import TaskInfo from '../../../../components/TaskInfo';
 import UserIcon from '../../../../components/UserIcon';
-
-// @TODO placeholder logged user initials (fetch current user later).
-const LOGGED_USER_INITIALS = 'AD';
-
-// @TODO placeholder project (fetch by id later).
-const PROJECT = {
-  name: 'Nom du projet',
-  description: 'Développement de la nouvelle version de l\'API REST avec authentification JWT',
-  contributors: [
-    { initials: 'AD', name: 'Propriétaire', owner: true },
-    { initials: 'BD', name: 'Bertrand Dupont', owner: false },
-    { initials: 'AD', name: 'Anne Dupont', owner: false }
-  ]
-};
-
-// @TODO placeholder assigned tasks (fetch later).
-const TASKS = [
-  { title: 'Authentification JWT', description: 'Implémenter le système d\'authentification avec tokens JWT', status: 'todo' as const,
-    date: '9 mars', assignees: [{ initials: 'BD', name: 'Bertrand Dupont' }, { initials: 'AD', name: 'Anne Dupont' }], commentsCount: 1,
-    comments: [{ initials: 'BD', author: 'Bertrand Dupont', timestamp: '23 mars, 11:20', text: 'Attention à bien gérer l’expiration des tokens et le refresh automatique côté client.' }] },
-  { title: 'Authentification JWT', description: 'Implémenter le système d\'authentification avec tokens JWT', status: 'in-progress' as const,
-    date: '9 mars', assignees: [{ initials: 'BD', name: 'Bertrand Dupont' }, { initials: 'AD', name: 'Anne Dupont' }], commentsCount: 0 },
-  { title: 'Authentification JWT', description: 'Implémenter le système d\'authentification avec tokens JWT', status: 'done' as const,
-    date: '9 mars', assignees: [{ initials: 'BD', name: 'Bertrand Dupont' }, { initials: 'AD', name: 'Anne Dupont' }], commentsCount: 0 },
-  { title: 'Authentification JWT', description: 'Implémenter le système d\'authentification avec tokens JWT', status: 'todo' as const,
-    date: '9 mars', assignees: [{ initials: 'BD', name: 'Bertrand Dupont' }, { initials: 'AD', name: 'Anne Dupont' }], commentsCount: 0 },
-  { title: 'Authentification JWT', description: 'Implémenter le système d\'authentification avec tokens JWT', status: 'in-progress' as const,
-    date: '9 mars', assignees: [{ initials: 'BD', name: 'Bertrand Dupont' }, { initials: 'AD', name: 'Anne Dupont' }], commentsCount: 0 },
-  { title: 'Authentification JWT', description: 'Implémenter le système d\'authentification avec tokens JWT', status: 'done' as const,
-    date: '9 mars', assignees: [{ initials: 'BD', name: 'Bertrand Dupont' }, { initials: 'AD', name: 'Anne Dupont' }], commentsCount: 1,
-    comments: [{ initials: 'BD', author: 'Bertrand Dupont', timestamp: '23 mars, 11:20', text: 'Attention à bien gérer l’expiration des tokens et le refresh automatique côté client.' }] },
-];
+import { requireSession } from '../../../../middleware/session';
+import { getProject } from '../../../../models/projects';
+import { formatDate, formatDateTime, toDate, toUiStatus } from '../../../../utils/task';
+import toInitials from '../../../../utils/toInitials';
 
 // Single project page.
-export default function ProjectDetailPage() {
+export default async function ProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const { token, user } = await requireSession();
+
+  const body = await getProject(token, id);
+  if (!body.success || !body.data?.project) notFound();
+
+  const project = body.data.project;
+  const currentInitials = toInitials(user.name, user.email);
+  const tasks = project.tasks ?? [];
+
+  // Assignee options for the task modals.
+  const memberOptions = project.members.map((member) => ({
+    label: member.user.name ?? member.user.email,
+    value: member.user.id,
+  }));
+
+  // Current contributors shown in the edit-project modal.
+  const memberEmails = project.members.map((member) => member.user.email);
+
   return (
     <main className='mx-auto w-full max-w-360 flex-1 px-6 py-16 lg:px-28'>
       <div className='flex flex-col gap-8'>
@@ -53,19 +49,23 @@ export default function ProjectDetailPage() {
         {/* Heading */}
         <div className='flex items-start gap-4'>
           <div className='h-14 w-14 shrink-0'>
-            <IconButton icon='back' />
+            <IconButton icon='back' href='/projects' />
           </div>
           <div className='hidden md:flex flex-col gap-4'>
             <div className='flex items-center gap-4'>
-              <h1 className='font-heading text-h4 text-grey-800'>{PROJECT.name}</h1>
-              <Link label='Modifier' href='#' />
+              <h1 className='font-heading text-h4 text-grey-800'>{project.name}</h1>
+              <EditProjectControl
+                name={project.name}
+                description={project.description ?? ''}
+                members={memberEmails}
+                updateAction={updateProject.bind(null, project.id)}
+                deleteAction={deleteProject.bind(null, project.id)}
+              />
             </div>
-            <p className='font-body text-body-l text-grey-600'>{PROJECT.description}</p>
+            <p className='font-body text-body-l text-grey-600'>{project.description}</p>
           </div>
           <div className='flex ml-auto flex-row items-end gap-3'>
-            <div className='h-13 w-full sm:w-43 min-w-22 max-w-43'>
-              <Button label='Créer une tâche' />
-            </div>
+            <CreateTaskControl action={createTask.bind(null, project.id)} members={memberOptions} />
             <div className='h-13 w-24'>
               <AIButton value='IA' />
             </div>
@@ -75,29 +75,38 @@ export default function ProjectDetailPage() {
         {/* Mobile title */}
         <div className='flex md:hidden flex-col gap-4'>
           <div className='flex items-center gap-4'>
-            <h1 className='font-heading text-h4 text-grey-800'>{PROJECT.name}</h1>
-            <Link label='Modifier' href='#' />
+            <h1 className='font-heading text-h4 text-grey-800'>{project.name}</h1>
+            <EditProjectControl
+              name={project.name}
+              description={project.description ?? ''}
+              members={memberEmails}
+              updateAction={updateProject.bind(null, project.id)}
+              deleteAction={deleteProject.bind(null, project.id)}
+            />
           </div>
-          <p className='font-body text-body-l text-grey-600'>{PROJECT.description}</p>
+          <p className='font-body text-body-l text-grey-600'>{project.description}</p>
         </div>
 
         {/* Contributors */}
         <section className='flex flex-wrap items-center justify-between gap-6 rounded-xl bg-grey-100 md:px-13 px-5 py-5'>
           <div className='flex flex-col sm:flex-row items-center gap-2 mx-auto sm:mx-0'>
             <h2 className='font-heading text-h5 text-grey-800'>Contributeurs</h2>
-            <span className='font-body text-body-m text-grey-600'>{PROJECT.contributors.length} personnes</span>
+            <span className='font-body text-body-m text-grey-600'>{project.members.length} personnes</span>
           </div>
           <div className='flex flex-wrap items-center gap-2'>
-            {PROJECT.contributors.map((contributor, index) => (
-              <div key={`${index}-${contributor.initials}`} className='flex items-center gap-1'>
-                <UserIcon
-                  initials={contributor.initials}
-                  size='sm'
-                  className={contributor.owner ? 'h-7 w-7' : 'h-7 w-7 bg-grey-200 text-grey-950 ring-2 ring-white'}
-                />
-                <Tag color={contributor.owner ? 'brand' : 'grey'} label={contributor.name} />
-              </div>
-            ))}
+            {project.members.map((member) => {
+              const owner = member.userId === project.ownerId;
+              return (
+                <div key={member.id} className='flex items-center gap-1'>
+                  <UserIcon
+                    initials={toInitials(member.user.name, member.user.email)}
+                    size='sm'
+                    className={owner ? 'h-7 w-7' : 'h-7 w-7 bg-grey-200 text-grey-950 ring-2 ring-white'}
+                  />
+                  <Tag color={owner ? 'brand' : 'grey'} label={owner ? 'Propriétaire' : (member.user.name ?? member.user.email)} />
+                </div>
+              );
+            })}
           </div>
         </section>
 
@@ -109,8 +118,10 @@ export default function ProjectDetailPage() {
               <p className='font-body text-body-m text-grey-600'>Par ordre de priorité</p>
             </div>
             <div className='flex flex-wrap items-center gap-4'>
+              {/*
               <Chips className='w-fit h-fit' label='Liste' active icon={<ColoredIcon src={CheckboxPrimary} color='var(--color-brand-dark)' />} />
-              <Chips className='w-fit h-fit border border-grey-200' label='Calendrier' icon={<ColoredIcon src={CalendarPrimary} color='var(--color-brand-dark)' />} />
+              <Chips className='w-fit h-fit border border-grey-200' label='Kanban' icon={<ColoredIcon src={CalendarPrimary} color='var(--color-brand-dark)' />} />
+              */}
               <Dropdown
                 multiple
                 placeholder='Statut'
@@ -121,21 +132,40 @@ export default function ProjectDetailPage() {
               <SearchBar placeholder='Rechercher une tâche' className='w-full sm:w-71' />
             </div>
           </div>
-          <div className='flex flex-col gap-4'>
-            {TASKS.map((task, index) => (
-              <TaskInfo
-                key={index}
-                title={task.title}
-                description={task.description}
-                status={task.status}
-                dueDate={task.date}
-                assignees={task.assignees}
-                commentsCount={task.commentsCount}
-                comments={task.comments}
-                currentUserInitials={LOGGED_USER_INITIALS}
-              />
-            ))}
-          </div>
+
+          {tasks.length === 0 ? (
+            <p className='font-body text-body-m text-grey-600'>Aucune tâche pour le moment.</p>
+          ) : (
+            <div className='flex flex-col gap-4'>
+              {tasks.map((task) => (
+                <TaskInfo
+                  key={task.id}
+                  title={task.title}
+                  description={task.description ?? ''}
+                  status={toUiStatus(task.status)}
+                  dueDate={formatDate(task.dueDate)}
+                  dueDateValue={toDate(task.dueDate)}
+                  commentsCount={task.comments?.length ?? 0}
+                  assignees={(task.assignees ?? []).map((assignee) => ({
+                    initials: toInitials(assignee.user.name, assignee.user.email),
+                    name: assignee.user.name ?? assignee.user.email,
+                  }))}
+                  comments={(task.comments ?? []).map((comment) => ({
+                    initials: toInitials(comment.author.name, comment.author.email),
+                    author: comment.author.name ?? comment.author.email,
+                    timestamp: formatDateTime(comment.createdAt),
+                    text: comment.content,
+                  }))}
+                  currentUserInitials={currentInitials}
+                  members={memberOptions}
+                  assigneeIds={(task.assignees ?? []).map((assignee) => assignee.user.id)}
+                  updateAction={updateTask.bind(null, project.id, task.id)}
+                  deleteAction={deleteTask.bind(null, project.id, task.id)}
+                  commentAction={createComment.bind(null, project.id, task.id)}
+                />
+              ))}
+            </div>
+          )}
         </section>
       </div>
     </main>
