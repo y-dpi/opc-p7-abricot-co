@@ -18,6 +18,7 @@ import TaskInfo from '../../../../components/TaskInfo';
 import UserIcon from '../../../../components/UserIcon';
 import { requireSession } from '../../../../middleware/session';
 import { getProject } from '../../../../models/projects';
+import { getTasks } from '../../../../models/tasks';
 import { formatDate, formatDateTime, toDate, toUiStatus } from '../../../../utils/task';
 import toInitials from '../../../../utils/toInitials';
 
@@ -26,12 +27,15 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
   const { id } = await params;
   const { token, user } = await requireSession();
 
-  const body = await getProject(token, id);
-  if (!body.success || !body.data?.project) notFound();
+  // Manually get task information for shallow tasks.
+  // - getProject returns the project with shallow tasks.
+  // - getTasks returns the tasks with their assignees and comments.
+  const [projectBody, tasksBody] = await Promise.all([getProject(token, id), getTasks(token, id)]);
+  if (!projectBody.success || !projectBody.data?.project) notFound();
 
-  const project = body.data.project;
+  const project = projectBody.data.project;
   const currentInitials = toInitials(user.name, user.email);
-  const tasks = project.tasks ?? [];
+  const tasks = tasksBody.success && tasksBody.data?.tasks ? tasksBody.data.tasks : [];
 
   // Assignee options for the task modals.
   const memberOptions = project.members.map((member) => ({
