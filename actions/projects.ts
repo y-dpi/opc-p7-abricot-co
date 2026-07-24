@@ -8,6 +8,7 @@ import {
   addContributor as apiAddContributor,
   createProject as apiCreateProject,
   deleteProject as apiDeleteProject,
+  removeContributor as apiRemoveContributor,
   updateProject as apiUpdateProject,
 } from '../models/projects';
 import { apiErrorMessage } from '../models/shared';
@@ -47,12 +48,16 @@ export async function createProject(_prev: FormState | undefined, formData: Form
   redirect(`/projects/${body.data.project.id}`);
 }
 
-// Update a project name and description, and add any new contributor emails.
-export async function updateProject(id: string, _prev: FormState | undefined, formData: FormData): Promise<FormState> {
+// Update a project name and description, add any new contributor emails, and remove un-ticked members.
+export async function updateProject(id: string, currentMemberIds: string[], _prev: FormState | undefined, formData: FormData): Promise<FormState> {
   const token = await requireToken();
   const name = String(formData.get('name') ?? '').trim();
   const description = String(formData.get('description') ?? '').trim();
   const contributors = parseEmails(String(formData.get('contributors') ?? ''));
+
+  // Members still ticked in the dropdown, anything missing was un-ticked and should be removed.
+  const keptMemberIds = formData.getAll('memberIds').map(String);
+  const removedMemberIds = currentMemberIds.filter((memberId) => !keptMemberIds.includes(memberId));
 
   if (!name) return { error: 'Le titre est requis.' };
 
@@ -61,6 +66,9 @@ export async function updateProject(id: string, _prev: FormState | undefined, fo
     body = await apiUpdateProject(token, id, { name, description });
     for (const email of contributors) {
       await apiAddContributor(token, id, { email });
+    }
+    for (const memberId of removedMemberIds) {
+      await apiRemoveContributor(token, id, memberId);
     }
   } catch {
     return { error: 'Impossible de contacter le serveur.' };

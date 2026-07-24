@@ -39,8 +39,13 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
     value: member.user.id,
   }));
 
-  // Current contributors shown in the edit-project modal.
-  const memberEmails = project.members.map((member) => member.user.email);
+  // Current contributors (owner excluded) shown in the edit-project modal.
+  const contributors = project.members.filter((member) => member.userId !== project.ownerId);
+  const contributorOptions = contributors.map((member) => ({
+    label: member.user.name ?? member.user.email,
+    value: member.user.id,
+  }));
+  const contributorIds = contributors.map((member) => member.user.id);
 
   return (
     <main className='mx-auto w-full max-w-360 flex-1 px-6 py-16 lg:px-28'>
@@ -57,8 +62,8 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
               <EditProjectControl
                 name={project.name}
                 description={project.description ?? ''}
-                members={memberEmails}
-                updateAction={updateProject.bind(null, project.id)}
+                members={contributorOptions}
+                updateAction={updateProject.bind(null, project.id, contributorIds)}
                 deleteAction={deleteProject.bind(null, project.id)}
               />
             </div>
@@ -79,8 +84,8 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
             <EditProjectControl
               name={project.name}
               description={project.description ?? ''}
-              members={memberEmails}
-              updateAction={updateProject.bind(null, project.id)}
+              members={contributorOptions}
+              updateAction={updateProject.bind(null, project.id, contributorIds)}
               deleteAction={deleteProject.bind(null, project.id)}
             />
           </div>

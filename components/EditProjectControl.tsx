@@ -9,7 +9,7 @@ import EditProjectModal from './modals/EditProjectModal';
 export default function EditProjectControl(props: {
   name: string,
   description: string,
-  members: string[],
+  members: { label: string, value: string }[],
   updateAction: FormAction,
   deleteAction: () => Promise<void>,
 }) {

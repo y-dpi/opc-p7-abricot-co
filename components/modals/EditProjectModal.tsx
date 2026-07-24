@@ -9,7 +9,7 @@ import Modal from '../Modal';
 export default function EditProjectModal(props: {
   name?: string,
   description?: string,
-  members?: string[],
+  members?: { label: string, value: string }[],
   formAction?: (formData: FormData) => void,
   pending?: boolean,
   error?: string,
@@ -60,7 +60,8 @@ export default function EditProjectModal(props: {
           {props.members && props.members.length > 0 && (
             <Dropdown
               label='Contributeurs actuels'
-              value={props.members}
+              name='memberIds'
+              value={props.members.map((member) => member.value)}
               options={props.members}
               multiple
               multiplePlaceholder='contributeurs'
