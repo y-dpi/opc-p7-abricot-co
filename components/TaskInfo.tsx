@@ -24,10 +24,12 @@ interface Assignee {
 }
 
 interface TaskComment {
+  id?: string;
   initials: string;
   author: string;
   timestamp: string;
   text: string;
+  deleteAction?: () => Promise<void>;
 }
 
 // Member option shown in the edit modal.
@@ -78,6 +80,7 @@ export default function TaskInfo(props: {
   const [commentPending, startComment] = useTransition();
   const [editError, setEditError] = useState<string>();
   const [editPending, startEdit] = useTransition();
+  const [, startCommentDelete] = useTransition();
 
   // Post a comment on the task.
   function submitComment(formData: FormData) {
@@ -168,11 +171,12 @@ export default function TaskInfo(props: {
         <div className='flex flex-col items-end gap-4'>
           {comments.map((comment, index) => (
             <Comment
-              key={`${index}-${comment.author}`}
+              key={comment.id ?? `${index}-${comment.author}`}
               initials={comment.initials}
               author={comment.author}
               timestamp={comment.timestamp}
               text={comment.text}
+              onClosePressed={comment.deleteAction ? () => startCommentDelete(() => comment.deleteAction!()) : undefined}
             />
           ))}
           {props.currentUserInitials && props.commentAction && (

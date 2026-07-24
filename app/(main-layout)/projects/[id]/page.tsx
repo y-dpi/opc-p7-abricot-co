@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 
-import { createComment } from '../../../../actions/comments';
+import { createComment, deleteComment } from '../../../../actions/comments';
 import { deleteProject, updateProject } from '../../../../actions/projects';
 import { createTask, deleteTask, updateTask } from '../../../../actions/tasks';
 import AIButton from '../../../../components/AIButton';
@@ -152,10 +152,12 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
                     name: assignee.user.name ?? assignee.user.email,
                   }))}
                   comments={(task.comments ?? []).map((comment) => ({
+                    id: comment.id,
                     initials: toInitials(comment.author.name, comment.author.email),
                     author: comment.author.name ?? comment.author.email,
                     timestamp: formatDateTime(comment.createdAt),
                     text: comment.content,
+                    deleteAction: deleteComment.bind(null, project.id, task.id, comment.id),
                   }))}
                   currentUserInitials={currentInitials}
                   members={memberOptions}
