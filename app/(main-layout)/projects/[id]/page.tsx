@@ -3,11 +3,7 @@ import { notFound } from 'next/navigation';
 import { createComment } from '../../../../actions/comments';
 import { deleteProject, updateProject } from '../../../../actions/projects';
 import { createTask, deleteTask, updateTask } from '../../../../actions/tasks';
-import CalendarPrimary from '../../../../assets/images/calendar-icon-primary.svg';
-import CheckboxPrimary from '../../../../assets/images/checkbox-icon-primary.svg';
 import AIButton from '../../../../components/AIButton';
-import Chips from '../../../../components/Chips';
-import ColoredIcon from '../../../../components/ColoredIcon';
 import CreateTaskControl from '../../../../components/CreateTaskControl';
 import Dropdown from '../../../../components/Dropdown';
 import EditProjectControl from '../../../../components/EditProjectControl';
@@ -127,10 +123,6 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
               <p className='font-body text-body-m text-grey-600'>Par ordre de priorité</p>
             </div>
             <div className='flex flex-wrap items-center gap-4'>
-              {/*
-              <Chips className='w-fit h-fit' label='Liste' active icon={<ColoredIcon src={CheckboxPrimary} color='var(--color-brand-dark)' />} />
-              <Chips className='w-fit h-fit border border-grey-200' label='Kanban' icon={<ColoredIcon src={CalendarPrimary} color='var(--color-brand-dark)' />} />
-              */}
               <Dropdown
                 multiple
                 placeholder='Statut'
