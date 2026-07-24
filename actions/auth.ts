@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
 import { createSession, deleteSession } from '../middleware/session';
-import { type AuthData, login as apiLogin, register as apiRegister, updateProfile as apiUpdateProfile } from '../models/auth';
+import { type AuthData, login as apiLogin, register as apiRegister, updatePassword as apiUpdatePassword, updateProfile as apiUpdateProfile } from '../models/auth';
 import { apiErrorMessage, type ApiResponse } from '../models/shared';
 import { type FormState, requireToken } from './shared';
 
@@ -75,6 +75,28 @@ export async function updateProfile(_prev: FormState | undefined, formData: Form
 
   revalidatePath('/account');
   revalidatePath('/dashboard');
+  return { ok: true };
+}
+
+// Change the current user password.
+export async function updatePassword(_prev: FormState | undefined, formData: FormData): Promise<FormState> {
+  const token = await requireToken();
+  const currentPassword = String(formData.get('currentPassword') ?? '');
+  const newPassword = String(formData.get('newPassword') ?? '');
+
+  if (!currentPassword || !newPassword) return { error: 'Les deux mots de passe sont requis.' };
+
+  let body;
+  try {
+    body = await apiUpdatePassword(token, { currentPassword, newPassword });
+  } catch {
+    return { error: 'Impossible de contacter le serveur.' };
+  }
+
+  if (!body.success) {
+    return { error: apiErrorMessage(body, 'Impossible de modifier le mot de passe.') };
+  }
+
   return { ok: true };
 }
 
