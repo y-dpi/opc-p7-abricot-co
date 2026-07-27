@@ -37,6 +37,7 @@ export default function Dropdown(props: {
   multiplePlaceholder?: string,
   options?: Option[],
   multiple?: boolean,
+  onChange?: (selected: string[]) => void,
   className?: string
 }) {
   const options = (props.options ?? []).map((option) =>
@@ -62,17 +63,23 @@ export default function Dropdown(props: {
       ? `${selected.length} ${props.multiplePlaceholder ?? ''}`.trim()
       : labelOf(selected[0]);
 
+  // Update selection and notify parent.
+  function updateSelected(next: string[]) {
+    setSelected(next);
+    props.onChange?.(next);
+  }
+
   // Pick (single) or toggle (multiple) an option value.
   function choose(value: string) {
     if (props.multiple) {
-      setSelected((current) =>
-        current.includes(value)
-          ? current.filter((item) => item !== value)
-          : [...current, value]
+      updateSelected(
+        selected.includes(value)
+          ? selected.filter((item) => item !== value)
+          : [...selected, value]
       );
       return;
     }
-    setSelected([value]);
+    updateSelected([value]);
     setOpen(false);
   }
 
@@ -152,7 +159,7 @@ export default function Dropdown(props: {
             aria-label='Effacer la sélection'
             onClick={(event) => {
               event.stopPropagation();
-              setSelected([]);
+              updateSelected([]);
               setOpen(false);
             }}
             className='flex shrink-0 cursor-pointer items-center justify-center text-grey-600 hover:text-grey-950'

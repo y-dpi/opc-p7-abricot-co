@@ -5,12 +5,10 @@ import { deleteProject, updateProject } from '../../../../actions/projects';
 import { createTask, deleteTask, updateTask } from '../../../../actions/tasks';
 import AIButton from '../../../../components/AIButton';
 import CreateTaskControl from '../../../../components/CreateTaskControl';
-import Dropdown from '../../../../components/Dropdown';
 import EditProjectControl from '../../../../components/EditProjectControl';
 import IconButton from '../../../../components/IconButton';
-import SearchBar from '../../../../components/SearchBar';
+import ProjectTasks from '../../../../components/ProjectTasks';
 import Tag from '../../../../components/Tag';
-import TaskInfo from '../../../../components/TaskInfo';
 import UserIcon from '../../../../components/UserIcon';
 import { requireSession } from '../../../../middleware/session';
 import { getProject } from '../../../../models/projects';
@@ -46,6 +44,35 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
     value: member.user.id,
   }));
   const contributorIds = contributors.map((member) => member.user.id);
+
+  // Filtered task items.
+  const taskItems = tasks.map((task) => ({
+    id: task.id,
+    title: task.title,
+    description: task.description ?? '',
+    status: toUiStatus(task.status),
+    dueDate: formatDate(task.dueDate),
+    dueDateValue: toDate(task.dueDate),
+    commentsCount: task.comments?.length ?? 0,
+    assignees: (task.assignees ?? []).map((assignee) => ({
+      initials: toInitials(assignee.user.name, assignee.user.email),
+      name: assignee.user.name ?? assignee.user.email,
+    })),
+    comments: (task.comments ?? []).map((comment) => ({
+      id: comment.id,
+      initials: toInitials(comment.author.name, comment.author.email),
+      author: comment.author.name ?? comment.author.email,
+      timestamp: formatDateTime(comment.createdAt),
+      text: comment.content,
+      deleteAction: deleteComment.bind(null, project.id, task.id, comment.id),
+    })),
+    currentUserInitials: currentInitials,
+    members: memberOptions,
+    assigneeIds: (task.assignees ?? []).map((assignee) => assignee.user.id),
+    updateAction: updateTask.bind(null, project.id, task.id),
+    deleteAction: deleteTask.bind(null, project.id, task.id),
+    commentAction: createComment.bind(null, project.id, task.id),
+  }));
 
   return (
     <main className='mx-auto w-full max-w-360 flex-1 px-6 py-16 lg:px-28'>
@@ -117,58 +144,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
 
         {/* Tasks card */}
         <section className='flex flex-col gap-10 rounded-xl border border-grey-200 bg-white px-5 md:px-15 py-10'>
-          <div className='flex flex-wrap items-center justify-between gap-4'>
-            <div className='flex flex-col gap-2'>
-              <h2 className='font-heading text-h5 text-grey-800'>Tâches</h2>
-              <p className='font-body text-body-m text-grey-600'>Par ordre de priorité</p>
-            </div>
-            <div className='flex flex-wrap items-center gap-4'>
-              <Dropdown
-                multiple
-                placeholder='Statut'
-                multiplePlaceholder='statuts'
-                options={['À faire', 'En cours', 'Terminée']}
-                className='w-full sm:w-44'
-              />
-              <SearchBar placeholder='Rechercher une tâche' className='w-full sm:w-71' />
-            </div>
-          </div>
-
-          {tasks.length === 0 ? (
-            <p className='font-body text-body-m text-grey-600'>Aucune tâche pour le moment.</p>
-          ) : (
-            <div className='flex flex-col gap-4'>
-              {tasks.map((task) => (
-                <TaskInfo
-                  key={task.id}
-                  title={task.title}
-                  description={task.description ?? ''}
-                  status={toUiStatus(task.status)}
-                  dueDate={formatDate(task.dueDate)}
-                  dueDateValue={toDate(task.dueDate)}
-                  commentsCount={task.comments?.length ?? 0}
-                  assignees={(task.assignees ?? []).map((assignee) => ({
-                    initials: toInitials(assignee.user.name, assignee.user.email),
-                    name: assignee.user.name ?? assignee.user.email,
-                  }))}
-                  comments={(task.comments ?? []).map((comment) => ({
-                    id: comment.id,
-                    initials: toInitials(comment.author.name, comment.author.email),
-                    author: comment.author.name ?? comment.author.email,
-                    timestamp: formatDateTime(comment.createdAt),
-                    text: comment.content,
-                    deleteAction: deleteComment.bind(null, project.id, task.id, comment.id),
-                  }))}
-                  currentUserInitials={currentInitials}
-                  members={memberOptions}
-                  assigneeIds={(task.assignees ?? []).map((assignee) => assignee.user.id)}
-                  updateAction={updateTask.bind(null, project.id, task.id)}
-                  deleteAction={deleteTask.bind(null, project.id, task.id)}
-                  commentAction={createComment.bind(null, project.id, task.id)}
-                />
-              ))}
-            </div>
-          )}
+          <ProjectTasks tasks={taskItems} />
         </section>
       </div>
     </main>
