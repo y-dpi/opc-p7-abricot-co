@@ -26,21 +26,21 @@ export default function ProjectTasks(props: { tasks: TaskItem[] }) {
 
   return (
     <>
-      <div className='flex flex-wrap items-center justify-between gap-4'>
-        <div className='flex flex-col gap-2'>
+      <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
+        <div className='flex flex-col gap-2 sm:shrink-0'>
           <h2 className='font-heading text-h5 text-grey-800'>Tâches</h2>
           <p className='font-body text-body-m text-grey-600'>Par ordre de priorité</p>
         </div>
-        <div className='flex flex-wrap items-center gap-4'>
+        <div className='flex w-full flex-col gap-4 sm:w-auto sm:min-w-0 sm:flex-row sm:items-center'>
           <Dropdown
             multiple
             placeholder='Statut'
             multiplePlaceholder='statuts'
             options={STATUS_OPTIONS}
             onChange={setStatuses}
-            className='w-full sm:w-44'
+            className='w-full sm:w-44 sm:shrink-0'
           />
-          <SearchBar placeholder='Rechercher une tâche' className='w-full sm:w-71' />
+          <SearchBar placeholder='Rechercher une tâche' className='w-full sm:w-71 sm:min-w-0' />
         </div>
       </div>
 

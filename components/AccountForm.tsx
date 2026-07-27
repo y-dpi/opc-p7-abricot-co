@@ -16,7 +16,7 @@ export default function AccountForm(props: {
 
   return (
     <form action={formAction} className='flex flex-col gap-6'>
-      <Input label='Nom' name='name' value={props.name} />
+      <Input label="Nom d'utilisateur" name='name' value={props.name} />
       <Input label='Email' type='email' name='email' value={props.email} />
 
       {state?.error && <p className='font-body text-body-s text-error'>{state.error}</p>}

@@ -120,12 +120,12 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
         </div>
 
         {/* Contributors */}
-        <section className='flex flex-wrap items-center justify-between gap-6 rounded-xl bg-grey-100 md:px-13 px-5 py-5'>
+        <section className='flex flex-wrap flex-col sm:flex-row items-center justify-between gap-6 rounded-xl bg-grey-100 md:px-13 px-5 py-5'>
           <div className='flex flex-col sm:flex-row items-center gap-2 mx-auto sm:mx-0'>
             <h2 className='font-heading text-h5 text-grey-800'>Contributeurs</h2>
             <span className='font-body text-body-m text-grey-600'>{project.members.length} personnes</span>
           </div>
-          <div className='flex flex-wrap items-center gap-2'>
+          <div className='flex flex-wrap items-center justify-center gap-2'>
             {project.members.map((member) => {
               const owner = member.userId === project.ownerId;
               return (

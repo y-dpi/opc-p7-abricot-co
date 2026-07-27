@@ -1,10 +1,10 @@
 import { createProject } from '../../../actions/projects';
 import CalendarPrimary from '../../../assets/images/calendar-icon-primary.svg';
 import CheckboxPrimary from '../../../assets/images/checkbox-icon-primary.svg';
-import SearchIcon from '../../../assets/images/search-icon-black.svg';
 import Chips from '../../../components/Chips';
 import ColoredIcon from '../../../components/ColoredIcon';
 import CreateProjectControl from '../../../components/CreateProjectControl';
+import SearchBar from '../../../components/SearchBar';
 import TaskCard from '../../../components/TaskCard';
 import { requireSession } from '../../../middleware/session';
 import { getAssignedTasks } from '../../../models/tasks';
@@ -46,10 +46,7 @@ export default async function DashboardPage() {
               <h2 className='font-heading text-h5 text-grey-800'>Mes tâches assignées</h2>
               <p className='font-body text-body-m text-grey-600'>Par ordre de priorité</p>
             </div>
-            <div className='flex items-center justify-between gap-8 rounded-lg border border-grey-200 bg-white px-8 py-6 w-full lg:w-89'>
-              <span className='font-body text-body-s text-grey-600'>Rechercher une tâche</span>
-              <ColoredIcon src={SearchIcon} color='currentColor' className='h-3.5 w-3.5 text-grey-600' />
-            </div>
+            <SearchBar placeholder='Rechercher une tâche' className='w-full lg:w-89' />
           </div>
 
           {tasks.length === 0 ? (

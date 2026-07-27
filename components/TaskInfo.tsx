@@ -99,123 +99,130 @@ export default function TaskInfo(props: {
     });
   }
 
-  const shell = 'w-full rounded-xl border border-grey-200 bg-white px-10 py-[25px]';
+  const shell = 'w-full rounded-xl border border-grey-200 bg-white px-10 @max-[350px]:px-4 py-[25px]';
 
   return (
-    <article className={cn('@container flex flex-col gap-6', shell, props.className)}>
+    <div className='@container w-full'>
+      <article className={cn('@container flex flex-col gap-6', shell, props.className)}>
 
-      {/* Header */}
-      <div className='flex items-start justify-between gap-8 overflow-hidden'>
-        <div className='flex flex-col gap-2'>
-          <div className='flex items-center gap-2'>
-            <h3 className='font-heading text-h5 text-grey-950'>{title}</h3>
-            <div className='block @max-[350px]:hidden'>
-              <StatusTag status={status} />
-            </div>
-          </div>
-          <p className='font-body text-body-s text-grey-600'>{description}</p>
-        </div>
-        <div className='flex flex-col gap-2 shrink-0 object-center items-center justify-center content-center'>
-          <IconButton icon='see-more' className='w-14 h-14' onClick={props.updateAction ? () => setEditOpen(true) : undefined} />
-          <div className='hidden @max-[350px]:block'>
-            <StatusTag status={status} compact={true} />
-          </div>
-        </div>
-      </div>
-
-      {/* Due Date */}
-      <div className='flex @max-[140px]:flex-col gap-2 overflow-hidden'>
-        <span className='font-body text-body-xs text-grey-600'>Échéance :</span>
-        <div className='flex items-center gap-1 text-grey-800'>
-          <ColoredIcon src={CalendarGrey} color='var(--color-grey-800)' className='w-4 h-4' />
-          <span className='font-body text-body-xs'>{dueDate}</span>
-        </div>
-      </div>
-
-      {/* Assignees */}
-      {assignees.length > 0 && (
-        <div className='flex flex-wrap items-center gap-2 overflow-hidden'>
-          <span className='font-body text-body-xs text-grey-600'>Assigné à :</span>
-          {assignees.map((assignee, index) => (
-            <div key={`${index}-${assignee.initials}`} className='flex items-center gap-1'>
-              <UserIcon
-                initials={assignee.initials}
-                size='sm'
-                className='w-7 h-7 bg-grey-200 text-grey-950 ring-2 ring-white'
-              />
-              <Tag color='grey' label={assignee.name} />
-            </div>
-          ))}
-        </div>
-      )}
-
-      <hr className='border-grey-200' />
-
-      {/* Comments Dropdown */}
-      <button
-        type='button'
-        onClick={() => setOpen((value) => !value)}
-        aria-expanded={open}
-        className='flex items-center justify-between hover:cursor-pointer'
-      >
-        <span className='font-body text-body-s text-grey-800 overflow-hidden'>Commentaires ({commentsCount})</span>
-        <ColoredIcon
-          src={DownBrackets}
-          color='var(--color-grey-950)'
-          className={cn('w-4 h-2 transition-transform', open && 'rotate-180')}
-        />
-      </button>
-
-      {/* Comments List */}
-      {open && (
-        <div className='flex flex-col items-end gap-4'>
-          {comments.map((comment, index) => (
-            <Comment
-              key={comment.id ?? `${index}-${comment.author}`}
-              initials={comment.initials}
-              author={comment.author}
-              timestamp={comment.timestamp}
-              text={comment.text}
-              onClosePressed={comment.deleteAction ? () => startCommentDelete(() => comment.deleteAction!()) : undefined}
-            />
-          ))}
-          {props.currentUserInitials && props.commentAction && (
-            <form action={submitComment} className='flex w-full flex-col items-end gap-4'>
-              <CommentField key={commentsCount} initials={props.currentUserInitials} name='content' />
-              {commentError && (
-                <p className='font-body text-body-s text-error self-stretch'>{commentError}</p>
-              )}
-              <div className='h-13 w-full max-w-52'>
-                <Button type='submit' label={commentPending ? 'Envoi…' : 'Envoyer'} disabled={commentPending} />
+        {/* Header */}
+        <div className='flex items-start justify-between gap-8 overflow-hidden'>
+          <div className='flex flex-col gap-2'>
+            <div className='flex items-center gap-2'>
+              <h3 className='font-heading text-h5 text-grey-950'>{title}</h3>
+              <div className='block @max-[350px]:hidden'>
+                <StatusTag status={status} />
               </div>
-            </form>
-          )}
-          {props.currentUserInitials && !props.commentAction && <>
-            <CommentField initials={props.currentUserInitials} />
-            <div className='h-13 w-full max-w-52'>
-              <Button label='Envoyer' disabled />
             </div>
-          </>}
+            <p className='font-body text-body-s text-grey-600'>{description}</p>
+          </div>
+          <div className='flex flex-col gap-2 shrink-0 object-center items-center justify-center content-center'>
+            <IconButton icon='see-more' className='w-12 h-12' onClick={props.updateAction ? () => setEditOpen(true) : undefined} />
+          </div>
         </div>
-      )}
 
-      {/* Edit modal */}
-      {editOpen && props.updateAction && (
-        <EditTaskModal
-          title={props.title}
-          description={props.description}
-          dueDate={props.dueDateValue}
-          status={status}
-          members={props.members}
-          assigneeIds={props.assigneeIds}
-          formAction={submitEdit}
-          pending={editPending}
-          error={editError}
-          onClose={() => setEditOpen(false)}
-          onDelete={props.deleteAction ? () => startDelete(() => props.deleteAction!()) : undefined}
-          deleting={deleting}
-        />
-      )}
-    </article>
+        {/* Compact status */}
+        {assignees.length > 0 && (
+          <div className='hidden @max-[350px]:flex flex-wrap items-center gap-2 overflow-hidden'>
+            <span className='font-body text-body-xs text-grey-600'>Statut :</span>
+            <StatusTag status={status} />
+          </div>
+        )}
+
+        {/* Due Date */}
+        <div className='flex @max-[140px]:flex-col gap-2 overflow-hidden'>
+          <span className='font-body text-body-xs text-grey-600'>Échéance :</span>
+          <div className='flex items-center gap-1 text-grey-800'>
+            <ColoredIcon src={CalendarGrey} color='var(--color-grey-800)' className='w-4 h-4' />
+            <span className='font-body text-body-xs'>{dueDate}</span>
+          </div>
+        </div>
+
+        {/* Assignees */}
+        {assignees.length > 0 && (
+          <div className='flex flex-wrap items-center gap-2 overflow-hidden'>
+            <span className='font-body text-body-xs text-grey-600'>Assigné à :</span>
+            {assignees.map((assignee, index) => (
+              <div key={`${index}-${assignee.initials}`} className='flex items-center gap-1'>
+                <UserIcon
+                  initials={assignee.initials}
+                  size='sm'
+                  className='w-7 h-7 bg-grey-200 text-grey-950 ring-2 ring-white'
+                />
+                <Tag color='grey' label={assignee.name} />
+              </div>
+            ))}
+          </div>
+        )}
+
+        <hr className='border-grey-200' />
+
+        {/* Comments Dropdown */}
+        <button
+          type='button'
+          onClick={() => setOpen((value) => !value)}
+          aria-expanded={open}
+          className='flex items-center justify-between hover:cursor-pointer'
+        >
+          <span className='font-body text-body-s text-grey-800 overflow-hidden'>Commentaires ({commentsCount})</span>
+          <ColoredIcon
+            src={DownBrackets}
+            color='var(--color-grey-950)'
+            className={cn('w-4 h-2 transition-transform', open && 'rotate-180')}
+          />
+        </button>
+
+        {/* Comments List */}
+        {open && (
+          <div className='flex flex-col items-end gap-4'>
+            {comments.map((comment, index) => (
+              <Comment
+                key={comment.id ?? `${index}-${comment.author}`}
+                initials={comment.initials}
+                author={comment.author}
+                timestamp={comment.timestamp}
+                text={comment.text}
+                onClosePressed={comment.deleteAction ? () => startCommentDelete(() => comment.deleteAction!()) : undefined}
+              />
+            ))}
+            {props.currentUserInitials && props.commentAction && (
+              <form action={submitComment} className='flex w-full flex-col items-end gap-4'>
+                <CommentField key={commentsCount} initials={props.currentUserInitials} name='content' />
+                {commentError && (
+                  <p className='font-body text-body-s text-error self-stretch'>{commentError}</p>
+                )}
+                <div className='h-13 w-full max-w-52'>
+                  <Button type='submit' label={commentPending ? 'Envoi…' : 'Envoyer'} disabled={commentPending} />
+                </div>
+              </form>
+            )}
+            {props.currentUserInitials && !props.commentAction && <>
+              <CommentField initials={props.currentUserInitials} />
+              <div className='h-13 w-full max-w-52'>
+                <Button label='Envoyer' disabled />
+              </div>
+            </>}
+          </div>
+        )}
+
+        {/* Edit modal */}
+        {editOpen && props.updateAction && (
+          <EditTaskModal
+            title={props.title}
+            description={props.description}
+            dueDate={props.dueDateValue}
+            status={status}
+            members={props.members}
+            assigneeIds={props.assigneeIds}
+            formAction={submitEdit}
+            pending={editPending}
+            error={editError}
+            onClose={() => setEditOpen(false)}
+            onDelete={props.deleteAction ? () => startDelete(() => props.deleteAction!()) : undefined}
+            deleting={deleting}
+          />
+        )}
+      </article>
+    </div>
   );
 }
