@@ -17,19 +17,29 @@ const STATUS_OPTIONS = [
 ];
 
 // Tasks card body component.
-export default function ProjectTasks(props: { tasks: TaskItem[] }) {
+export default function ProjectTasks(props: { tasks: TaskItem[], query?: string }) {
   const [statuses, setStatuses] = useState<string[]>([]);
+  const searching = (props.query ?? '').trim() !== '';
 
   const visible = statuses.length === 0
     ? props.tasks
     : props.tasks.filter((task) => task.status != null && statuses.includes(task.status));
+
+  // Message shown in place of the list when nothing is left to display.
+  const emptyMessage = props.tasks.length > 0
+    ? 'Aucune tâche pour ce filtre.'
+    : searching
+      ? 'Aucune tâche ne correspond à votre recherche.'
+      : 'Aucune tâche pour le moment.';
 
   return (
     <>
       <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
         <div className='flex flex-col gap-2 sm:shrink-0'>
           <h2 className='font-heading text-h5 text-grey-800'>Tâches</h2>
-          <p className='font-body text-body-m text-grey-600'>Par ordre de priorité</p>
+          <p className='font-body text-body-m text-grey-600'>
+            {searching ? 'Par pertinence' : 'Par ordre de priorité'}
+          </p>
         </div>
         <div className='flex w-full flex-col gap-4 sm:w-auto sm:min-w-0 sm:flex-row sm:items-center'>
           <Dropdown
@@ -45,9 +55,7 @@ export default function ProjectTasks(props: { tasks: TaskItem[] }) {
       </div>
 
       {visible.length === 0 ? (
-        <p className='font-body text-body-m text-grey-600'>
-          {props.tasks.length === 0 ? 'Aucune tâche pour le moment.' : 'Aucune tâche pour ce filtre.'}
-        </p>
+        <p className='font-body text-body-m text-grey-600'>{emptyMessage}</p>
       ) : (
         <div className='flex flex-col gap-4'>
           {visible.map(({ id, ...task }) => (

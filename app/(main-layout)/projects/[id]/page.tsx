@@ -13,12 +13,17 @@ import UserIcon from '../../../../components/UserIcon';
 import { requireSession } from '../../../../middleware/session';
 import { getProject } from '../../../../models/projects';
 import { getTasks } from '../../../../models/tasks';
+import { SEARCH_PARAM, searchByRelevance, toSearchQuery } from '../../../../utils/search';
 import { formatDate, formatDateTime, toDate, toUiStatus } from '../../../../utils/task';
 import toInitials from '../../../../utils/toInitials';
 
 // Single project page.
-export default async function ProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function ProjectDetailPage({ params, searchParams }: {
+  params: Promise<{ id: string }>,
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
   const { id } = await params;
+  const query = toSearchQuery((await searchParams)[SEARCH_PARAM]);
   const { token, user } = await requireSession();
 
   // Manually get task information for shallow tasks.
@@ -29,7 +34,13 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
 
   const project = projectBody.data.project;
   const currentInitials = toInitials(user.name, user.email);
-  const tasks = tasksBody.success && tasksBody.data?.tasks ? tasksBody.data.tasks : [];
+  const allTasks = tasksBody.success && tasksBody.data?.tasks ? tasksBody.data.tasks : [];
+
+  // Apply frontend search.
+  const tasks = searchByRelevance(allTasks, query, (task) => ({
+    title: task.title,
+    description: task.description,
+  }));
 
   // Assignee options for the task modals.
   const memberOptions = project.members.map((member) => ({
@@ -144,7 +155,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
 
         {/* Tasks card */}
         <section className='flex flex-col gap-10 rounded-xl border border-grey-200 bg-white px-5 md:px-15 py-10'>
-          <ProjectTasks tasks={taskItems} />
+          <ProjectTasks tasks={taskItems} query={query} />
         </section>
       </div>
     </main>

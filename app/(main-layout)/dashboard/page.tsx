@@ -8,15 +8,27 @@ import SearchBar from '../../../components/SearchBar';
 import TaskCard from '../../../components/TaskCard';
 import { requireSession } from '../../../middleware/session';
 import { getAssignedTasks } from '../../../models/tasks';
+import { SEARCH_PARAM, searchByRelevance, toSearchQuery } from '../../../utils/search';
 import { formatDate, toUiStatus } from '../../../utils/task';
 
 // Dashboard page.
-export default async function DashboardPage() {
+export default async function DashboardPage({ searchParams }: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
   const { token, user } = await requireSession();
   const userName = user.name ?? user.email;
 
+  const query = toSearchQuery((await searchParams)[SEARCH_PARAM]);
+  const searching = query.trim() !== '';
+
   const body = await getAssignedTasks(token);
-  const tasks = body.success && body.data?.tasks ? body.data.tasks : [];
+  const allTasks = body.success && body.data?.tasks ? body.data.tasks : [];
+
+  // Apply frontend search.
+  const tasks = searchByRelevance(allTasks, query, (task) => ({
+    title: task.title,
+    description: task.description,
+  }));
 
   return (
     <main className='mx-auto w-full max-w-360 flex-1 px-6 py-16 lg:px-25'>
@@ -44,13 +56,17 @@ export default async function DashboardPage() {
           <div className='flex flex-wrap items-center justify-between gap-6'>
             <div className='flex flex-col gap-2'>
               <h2 className='font-heading text-h5 text-grey-800'>Mes tâches assignées</h2>
-              <p className='font-body text-body-m text-grey-600'>Par ordre de priorité</p>
+              <p className='font-body text-body-m text-grey-600'>
+                {searching ? 'Par pertinence' : 'Par ordre de priorité'}
+              </p>
             </div>
             <SearchBar placeholder='Rechercher une tâche' className='w-full lg:w-89' />
           </div>
 
           {tasks.length === 0 ? (
-            <p className='font-body text-body-m text-grey-600'>Aucune tâche assignée.</p>
+            <p className='font-body text-body-m text-grey-600'>
+              {searching ? 'Aucune tâche ne correspond à votre recherche.' : 'Aucune tâche assignée.'}
+            </p>
           ) : (
             <div className='flex flex-col gap-4'>
               {tasks.map((task) => (
