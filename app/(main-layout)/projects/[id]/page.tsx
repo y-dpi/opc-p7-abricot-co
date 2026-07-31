@@ -42,6 +42,11 @@ export default async function ProjectDetailPage({ params, searchParams }: {
     description: task.description,
   }));
 
+  // Only an admin may edit or delete the project.
+  const role = project.userRole
+    ?? project.members.find((member) => member.userId === user.id)?.role;
+  const isAdmin = role === 'ADMIN' || project.ownerId === user.id;
+
   // Assignee options for the task modals.
   const memberOptions = project.members.map((member) => ({
     label: member.user.name ?? member.user.email,
@@ -97,13 +102,15 @@ export default async function ProjectDetailPage({ params, searchParams }: {
           <div className='hidden md:flex flex-col gap-4'>
             <div className='flex items-center gap-4'>
               <h1 className='font-heading text-h4 text-grey-800'>{project.name}</h1>
-              <EditProjectControl
-                name={project.name}
-                description={project.description ?? ''}
-                members={contributorOptions}
-                updateAction={updateProject.bind(null, project.id, contributorIds)}
-                deleteAction={deleteProject.bind(null, project.id)}
-              />
+              {isAdmin && (
+                <EditProjectControl
+                  name={project.name}
+                  description={project.description ?? ''}
+                  members={contributorOptions}
+                  updateAction={updateProject.bind(null, project.id, contributorIds)}
+                  deleteAction={deleteProject.bind(null, project.id)}
+                />
+              )}
             </div>
             <p className='font-body text-body-l text-grey-600'>{project.description}</p>
           </div>
@@ -119,13 +126,15 @@ export default async function ProjectDetailPage({ params, searchParams }: {
         <div className='flex md:hidden flex-col gap-4'>
           <div className='flex items-center gap-4'>
             <h1 className='font-heading text-h4 text-grey-800'>{project.name}</h1>
-            <EditProjectControl
-              name={project.name}
-              description={project.description ?? ''}
-              members={contributorOptions}
-              updateAction={updateProject.bind(null, project.id, contributorIds)}
-              deleteAction={deleteProject.bind(null, project.id)}
-            />
+            {isAdmin && (
+              <EditProjectControl
+                name={project.name}
+                description={project.description ?? ''}
+                members={contributorOptions}
+                updateAction={updateProject.bind(null, project.id, contributorIds)}
+                deleteAction={deleteProject.bind(null, project.id)}
+              />
+            )}
           </div>
           <p className='font-body text-body-l text-grey-600'>{project.description}</p>
         </div>
