@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useId, useRef, useState, useTransition } from 'react';
+import { useEffect, useRef, useState, useTransition } from 'react';
 
 import CloseIcon from '../assets/images/close-icon-black.svg';
 import SearchIcon from '../assets/images/search-icon-black.svg';
@@ -29,7 +29,6 @@ export default function SearchBar(props: {
   const [pending, startTransition] = useTransition();
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const hasValue = value.length > 0;
-  const inputId = useId();
   const placeholder = props.placeholder ?? 'Rechercher';
 
   // Use URL query when it changes on its own but not while
@@ -74,14 +73,12 @@ export default function SearchBar(props: {
 
   return (
     <label className={cn('flex flex-col gap-2 w-full', props.className)}>
-      {props.label && (
-        <label htmlFor={inputId} className='font-body text-body-s text-grey-950'>{props.label}</label>
-      )}
+      <span className={props.label ? 'font-body text-body-s text-grey-950' : 'sr-only'}>
+        {props.label ?? placeholder}
+      </span>
       <div className='field-shell flex items-center gap-2 h-13 px-4 rounded border border-grey-200 bg-white'>
         <input
-          id={inputId}
           type='search'
-          aria-label={props.label ? undefined : placeholder}
           value={value}
           onChange={(event) => change(event.target.value)}
           onKeyDown={(event) => {

@@ -14,6 +14,7 @@ export default function CommentField(props: {
 
   return (
     <label className={cn('flex items-start gap-4 w-full', props.className)}>
+      <span className='sr-only'>{props.label ?? 'Ajouter un commentaire'}</span>
       <UserIcon initials={props.initials} size='sm' className='w-7 h-7 shrink-0 border border-white' />
       <div className='field-shell flex-1 min-w-0 flex items-center px-4 py-5 rounded-xl border border-transparent bg-grey-50'>
         <input
@@ -21,7 +22,6 @@ export default function CommentField(props: {
           name={props.name}
           defaultValue={props.value}
           placeholder={placeholder}
-          aria-label={props.label ?? 'Ajouter un commentaire'}
           className='flex-1 min-w-0 bg-transparent font-body text-body-2xs text-grey-950 placeholder:text-grey-600 outline-none'
         />
       </div>
