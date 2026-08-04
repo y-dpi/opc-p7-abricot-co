@@ -29,12 +29,12 @@ export default function AITaskCard(props: {
       <div className='flex flex-col gap-8 min-w-0'>
         <TitleBlock title={title} description={description} />
         <div className='flex items-center gap-4 text-grey-600 @max-[220px]:flex-col @max-[220px]:items-start @max-[220px]:gap-2'>
-          <button className='flex items-center gap-2 transition-colors hover:cursor-pointer hover:text-error'>
+          <button type='button' className='flex items-center gap-2 transition-colors hover:cursor-pointer hover:text-error'>
             <ColoredIcon src={DeleteIcon} color='currentColor' className='w-4 h-4' />
             <span className='font-body text-body-xs'>Supprimer</span>
           </button>
-          <span className='h-3 w-px bg-grey-400 @max-[220px]:hidden' />
-          <button className='flex items-center gap-2 transition-colors hover:cursor-pointer hover:text-info'>
+          <span aria-hidden='true' className='h-3 w-px bg-grey-400 @max-[220px]:hidden' />
+          <button type='button' className='flex items-center gap-2 transition-colors hover:cursor-pointer hover:text-info'>
             <ColoredIcon src={PencilGrey} color='currentColor' className='w-3 h-4' />
             <span className='font-body text-body-xs'>Modifier</span>
           </button>

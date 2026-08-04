@@ -1,9 +1,13 @@
+import type { Metadata } from 'next';
+
 import { logout, updatePassword, updateProfile } from '../../../actions/auth';
 import AccountForm from '../../../components/AccountForm';
 import Button from '../../../components/Button';
 import PasswordForm from '../../../components/PasswordForm';
 import { requireSession } from '../../../middleware/session';
 import { getProfile } from '../../../models/auth';
+
+export const metadata: Metadata = { title: 'Mon compte' };
 
 // Account page.
 export default async function AccountPage() {

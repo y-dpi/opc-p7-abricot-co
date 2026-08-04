@@ -12,6 +12,14 @@ const TAG_STYLES: Record<TagColor, string> = {
   brand: 'bg-brand-light text-brand-dark',
   grey: 'bg-grey-200 text-grey-600'
 };
+const TAG_MUTED_STYLES: Record<TagColor, string> = {
+  green: 'bg-success-light/50 text-success',
+  red: 'bg-error-light/50 text-error',
+  orange: 'bg-warning-light/50 text-warning',
+  blue: 'bg-info-light/50 text-info',
+  brand: 'bg-brand-light/50 text-brand-dark',
+  grey: 'bg-grey-200/50 text-grey-600'
+};
 
 // Tag component.
 export default function Tag(props: {
@@ -25,11 +33,15 @@ export default function Tag(props: {
     <span className={cn(
       'inline-flex items-center justify-center rounded-full px-4 py-1 font-body text-body-s whitespace-nowrap',
       props.compact && 'px-2',
-      TAG_STYLES[props.color],
-      props.muted && 'opacity-50',
+      props.muted ? TAG_MUTED_STYLES[props.color] : TAG_STYLES[props.color],
       props.className
     )}>
-      {props.compact ? <span aria-label={props.label}>●</span> : props.label}
+      {props.compact ? (
+        <>
+          <span className='sr-only'>{props.label}</span>
+          <span aria-hidden='true'>●</span>
+        </>
+      ) : props.label}
     </span>
   );
 }

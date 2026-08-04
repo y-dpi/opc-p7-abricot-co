@@ -1,7 +1,10 @@
+import type { Metadata } from 'next';
 import Image from 'next/image';
 import type { ReactNode } from 'react';
 
 import cn from '../../utils/className';
+
+export const metadata: Metadata = { title: 'Composants' };
 
 // Types.
 interface Preview {
@@ -210,7 +213,7 @@ const previews: Preview[] = [
     } active />
   },
   {
-    name: 'Comment Outgoing',
+    name: 'Comment',
     size: { width: '720px', height: '96px' },
     render: () => (
       <Comment
@@ -218,18 +221,6 @@ const previews: Preview[] = [
         author='Bertrand Dupont'
         timestamp='23 mars, 11:20'
         text='Attention à bien gérer l’expiration des tokens et le refresh automatique côté client.'
-      />
-    )
-  },
-  {
-    name: 'Comment Incoming',
-    size: { width: '720px', height: '96px' },
-    render: () => (
-      <Comment
-        incoming
-        initials='AD'
-        timestamp='23 mars, 11:24'
-        text='Bien noté, je prévois un refresh token avec rotation côté serveur.'
       />
     )
   },
@@ -357,7 +348,7 @@ function PreviewFrame({ name, size, children }: {
 }) {
   return (
     <section className='flex flex-col gap-3'>
-      <h5 className='font-heading text-h5 text-grey-600 uppercase tracking-widest'>{name}</h5>
+      <h2 className='font-heading text-h5 text-grey-600 uppercase tracking-widest'>{name}</h2>
       <div
         className='preview-frame relative overflow-hidden p-6' style={{
           resize: 'both',
@@ -389,7 +380,7 @@ function PreviewFrame({ name, size, children }: {
 // Component preview page.
 export default function ComponentsPage() {
   return (
-    <div className='min-h-screen bg-grey-50 p-8 md:p-12'>
+    <main className='min-h-screen bg-grey-50 p-8 md:p-12'>
       <div className='max-w-4xl mx-auto flex flex-col gap-10'>
 
         {/* Page header */}
@@ -409,6 +400,6 @@ export default function ComponentsPage() {
           ))}
         </div>
       </div>
-    </div>
+    </main>
   );
 }

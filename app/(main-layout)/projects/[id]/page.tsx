@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 import { createComment, deleteComment } from '../../../../actions/comments';
@@ -16,6 +17,8 @@ import { getTasks } from '../../../../models/tasks';
 import { SEARCH_PARAM, searchByRelevance, toSearchQuery } from '../../../../utils/search';
 import { formatDate, formatDateTime, toDate, toUiStatus } from '../../../../utils/task';
 import toInitials from '../../../../utils/toInitials';
+
+export const metadata: Metadata = { title: 'Projet' };
 
 // Single project page.
 export default async function ProjectDetailPage({ params, searchParams }: {
@@ -97,7 +100,7 @@ export default async function ProjectDetailPage({ params, searchParams }: {
         {/* Heading */}
         <div className='flex items-start gap-4'>
           <div className='h-14 w-14 shrink-0'>
-            <IconButton icon='back' href='/projects' />
+            <IconButton icon='back' label='Retour aux projets' href='/projects' />
           </div>
           <div className='hidden md:flex flex-col gap-4'>
             <div className='flex items-center gap-4'>

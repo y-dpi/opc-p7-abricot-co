@@ -1,9 +1,12 @@
+import type { Metadata } from 'next';
 import Image from 'next/image';
 
 import LoginBackground from '../../assets/images/login-background.png';
 import BrandLogo from '../../components/BrandLogo';
 import Link from '../../components/Link';
 import LoginForm from '../../components/LoginForm';
+
+export const metadata: Metadata = { title: 'Connexion' };
 
 // Login page.
 export default function LoginPage() {

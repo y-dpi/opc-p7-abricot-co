@@ -54,7 +54,7 @@ export default function DateField(props: {
       <label htmlFor={inputId} className='font-body text-body-s text-grey-950'>{props.label}</label>
       <div
         onClick={openPicker}
-        className='flex items-center gap-2 h-13 px-4 rounded border border-grey-200 bg-white cursor-pointer'
+        className='field-shell flex items-center gap-2 h-13 px-4 rounded border border-grey-200 bg-white cursor-pointer'
       >
         <span
           aria-hidden='true'

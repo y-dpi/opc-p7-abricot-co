@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useId, useState } from 'react';
 
 import cn from './../utils/className';
 import Tag from './Tag';
@@ -21,14 +21,21 @@ export default function StatusSelector(props: {
   name?: string
 }) {
   const [status, setStatus] = useState<TaskStatus>(props.value ?? 'todo');
+  const labelId = useId();
 
   return (
     <div className='flex flex-col gap-4'>
       {props.name && <input type='hidden' name={props.name} value={status} />}
-      <span className='font-body text-body-s text-grey-950'>Statut :</span>
-      <div className='flex flex-wrap gap-2'>
+      <span id={labelId} className='font-body text-body-s text-grey-950'>Statut :</span>
+      <div role='group' aria-labelledby={labelId} className='flex flex-wrap gap-2'>
         {STATUSES.map((s) => (
-          <button key={s.value} type='button' onClick={() => setStatus(s.value)} className='hover:cursor-pointer'>
+          <button
+            key={s.value}
+            type='button'
+            aria-pressed={status === s.value}
+            onClick={() => setStatus(s.value)}
+            className='hover:cursor-pointer'
+          >
             <Tag className={cn((status === s.value) ? 'border' : '')} color={s.color} label={s.label} muted={status !== s.value} />
           </button>
         ))}

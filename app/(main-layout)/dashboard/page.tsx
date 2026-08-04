@@ -1,3 +1,5 @@
+import type { Metadata } from 'next';
+
 import { createProject } from '../../../actions/projects';
 import CalendarPrimary from '../../../assets/images/calendar-icon-primary.svg';
 import CheckboxPrimary from '../../../assets/images/checkbox-icon-primary.svg';
@@ -10,6 +12,8 @@ import { requireSession } from '../../../middleware/session';
 import { getAssignedTasks } from '../../../models/tasks';
 import { SEARCH_PARAM, searchByRelevance, toSearchQuery } from '../../../utils/search';
 import { formatDate, toUiStatus } from '../../../utils/task';
+
+export const metadata: Metadata = { title: 'Tableau de bord' };
 
 // Dashboard page.
 export default async function DashboardPage({ searchParams }: {

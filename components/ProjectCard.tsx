@@ -29,7 +29,7 @@ export default function ProjectCard(props: {
 
       {/* Header */}
       <div className='flex flex-col gap-2'>
-        <h3 className='font-heading text-h5 text-grey-800'>{name}</h3>
+        <h2 className='font-heading text-h5 text-grey-800'>{name}</h2>
         <p className='font-body text-body-s text-grey-600'>{description}</p>
       </div>
 

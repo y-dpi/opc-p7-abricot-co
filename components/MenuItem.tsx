@@ -14,6 +14,7 @@ export default function MenuItem(props: {
   return (
     <NextLink
       href={props.href}
+      aria-current={props.active ? 'page' : undefined}
       className={cn(
         'flex w-full h-full items-center justify-center gap-2 rounded-xl px-4 py-3 font-body text-body-m sm:gap-4 sm:px-6 sm:py-4 lg:px-16 lg:py-7',
         props.active ? 'bg-grey-950 text-white' : 'bg-white text-brand-dark',

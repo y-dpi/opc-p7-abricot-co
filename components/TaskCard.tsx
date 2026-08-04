@@ -45,16 +45,20 @@ function MetaRow({ projectName, date, commentsCount }: {
         <ColoredIcon src={FolderPrimary} color='var(--color-grey-400)' className='w-4 h-4' />
         <span className='font-body text-body-xs'>{projectName}</span>
       </div>
-      <span className='h-3 w-px bg-grey-400 @max-[350px]:hidden' />
+      <span aria-hidden='true' className='h-3 w-px bg-grey-400 @max-[350px]:hidden' />
       <div className='flex items-center gap-4 @max-[150px]:flex-col @max-[150px]:items-start @max-[150px]:gap-2'>
         <div className='flex items-center gap-2'>
           <Image className='w-4 h-4' alt='' src={CalendarGrey} />
-          <span className='font-body text-body-xs'>{date}</span>
+          <span className='font-body text-body-xs'>
+            <span className='sr-only'>Échéance : </span>{date}
+          </span>
         </div>
-        <span className='h-3 w-px bg-grey-400 @max-[150px]:hidden' />
+        <span aria-hidden='true' className='h-3 w-px bg-grey-400 @max-[150px]:hidden' />
         <div className='flex items-center gap-2'>
           <Image className='w-4 h-4' alt='' src={MessageGrey} />
-          <span className='font-body text-body-xs'>{commentsCount}</span>
+          <span className='font-body text-body-xs'>
+            {commentsCount}<span className='sr-only'> commentaire(s)</span>
+          </span>
         </div>
       </div>
     </div>

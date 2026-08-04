@@ -50,7 +50,9 @@ export default function Dropdown(props: {
   const [rect, setRect] = useState({ top: 0, left: 0, width: 0 });
   const fieldRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
+
   const listId = useId();
+  const labelId = useId();
   const hasValue = selected.length > 0;
 
   // Label matching a selected value.
@@ -122,7 +124,9 @@ export default function Dropdown(props: {
 
   return (
     <div className={cn('flex flex-col gap-2 w-full', props.className)}>
-      {props.label && <span className='font-body text-body-s text-grey-950'>{props.label}</span>}
+      {props.label && (
+        <span id={labelId} className='font-body text-body-s text-grey-950'>{props.label}</span>
+      )}
 
       {/* Submit the current selection when used inside a form. */}
       {props.name && selected.map((value) => (
@@ -135,7 +139,9 @@ export default function Dropdown(props: {
         tabIndex={0}
         aria-haspopup='listbox'
         aria-expanded={open}
-        aria-controls={listId}
+        aria-controls={open ? listId : undefined}
+        aria-labelledby={props.label ? labelId : undefined}
+        aria-label={props.label ? undefined : (props.placeholder ?? 'Sélectionner une option')}
         onClick={toggle}
         onKeyDown={(event) => {
           if (event.key === 'Enter' || event.key === ' ') {

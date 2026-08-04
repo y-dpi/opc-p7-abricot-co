@@ -8,11 +8,14 @@ import ColoredIcon from './ColoredIcon';
 // Icon button component.
 export default function IconButton(props: {
   icon: 'back' | 'see-more',
+  label?: string,
   active?: boolean,
   href?: string,
   onClick?: () => void,
   className?: string
 }) {
+  const label = props.label ?? (props.icon === 'back' ? 'Retour' : 'Plus d’options');
+
   const className = cn(
     'group flex items-center justify-center w-full h-full rounded-xl border bg-white hover:cursor-pointer',
     props.active ? 'border-brand-dark' : 'border-grey-200 hover:border-brand-dark',
@@ -38,11 +41,15 @@ export default function IconButton(props: {
 
   // Render a link when a href is given.
   if (props.href) {
-    return <NextLink href={props.href} className={className}>{icon}</NextLink>;
+    return (
+      <NextLink href={props.href} aria-label={label} className={className}>
+        {icon}
+      </NextLink>
+    );
   }
 
   return (
-    <button type='button' onClick={props.onClick} className={className}>
+    <button type='button' aria-label={label} onClick={props.onClick} className={className}>
       {icon}
     </button>
   );

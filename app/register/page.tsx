@@ -1,9 +1,12 @@
+import type { Metadata } from 'next';
 import Image from 'next/image';
 
 import SigninBackground from '../../assets/images/signin-background.png';
 import BrandLogo from '../../components/BrandLogo';
 import Link from '../../components/Link';
 import RegisterForm from '../../components/RegisterForm';
+
+export const metadata: Metadata = { title: 'Inscription' };
 
 // Register page.
 export default function RegisterPage() {

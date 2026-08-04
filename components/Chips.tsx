@@ -26,7 +26,11 @@ export default function Chips(props: {
   );
 
   if (props.href) {
-    return <NextLink href={props.href} className={className}>{content}</NextLink>;
+    return (
+      <NextLink href={props.href} aria-current={props.active ? 'page' : undefined} className={className}>
+        {content}
+      </NextLink>
+    );
   }
-  return <button className={className}>{content}</button>;
+  return <button type='button' aria-pressed={props.active} className={className}>{content}</button>;
 }

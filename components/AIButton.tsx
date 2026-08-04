@@ -8,21 +8,28 @@ import cn from '../utils/className';
 export default function AIButton(props: {
   compact?: boolean
   value?: string
+  label?: string
 }) {
+  const label = props.label ?? 'Générer des tâches avec l’IA';
+
   return (
-    <button className={cn(
-      'group flex items-center justify-center w-full h-full gap-3 bg-brand-light hover:bg-brand-dark cursor-pointer',
-      props.compact ? 'rounded-full' : 'rounded-xl'
-    )}>
+    <button
+      type='button'
+      aria-label={label}
+      className={cn(
+        'group flex items-center justify-center w-full h-full gap-3 bg-brand-light hover:bg-brand-dark cursor-pointer',
+        props.compact ? 'rounded-full' : 'rounded-xl'
+      )}
+    >
       <Image
         className={cn((props.compact) ? 'w-2 h-2' : 'w-5 h-5', 'block group-hover:hidden overflow-hidden')}
-        alt='AI star icon'
+        alt=''
         loading='eager'
         src={StarPrimary}
       />
       <Image
         className={cn((props.compact) ? 'w-2 h-2' : 'w-5 h-5', 'hidden group-hover:block overflow-hidden')}
-        alt='AI star icon'
+        alt=''
         loading='eager'
         src={StarWhite}
       />

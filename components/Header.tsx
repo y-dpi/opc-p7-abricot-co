@@ -25,7 +25,7 @@ export default function Header(props: {
       <div className='h-4 w-31 shrink-0 sm:h-5 sm:w-37'>
         <BrandLogo />
       </div>
-      <nav className='flex items-center gap-2 lg:gap-4'>
+      <nav aria-label='Navigation principale' className='flex items-center gap-2 lg:gap-4'>
         <MenuItem
           label='Tableau de bord'
           href='/dashboard'
@@ -39,7 +39,7 @@ export default function Header(props: {
           icon={<Image className='w-7 h-6' alt='' src={projActive ? FolderWhite : FolderPrimary} />}
         />
       </nav>
-      <NextLink href='/account' className='h-11 w-11 shrink-0 sm:h-16 sm:w-16'>
+      <NextLink href='/account' aria-label='Mon compte' className='h-11 w-11 shrink-0 sm:h-16 sm:w-16'>
         <UserIcon initials={props.initials ?? '??'} />
       </NextLink>
     </header>

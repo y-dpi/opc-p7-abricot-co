@@ -1,7 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { useState } from 'react';
+import { useId, useState } from 'react';
 
 import CloseIcon from '../assets/images/close-icon-black.svg';
 import StarPrimary from '../assets/images/star-primary.svg';
@@ -19,6 +19,7 @@ export default function Modal(props: {
   onClose?: () => void,
 }) {
   const [open, setOpen] = useState(true);
+  const titleId = useId();
 
   // When an onClose is given the parent owns the visibility.
   const controlled = props.onClose !== undefined;
@@ -27,22 +28,30 @@ export default function Modal(props: {
   if (!props.mock && !controlled && !open) return null;
 
   const panel = (
-    <div className={cn(
-      '@container relative flex w-full max-h-[90svh] flex-col gap-10 rounded-xl bg-white px-0 sm:px-13 py-20 overflow-x-hidden',
-      props.className
-    )}>
-      <span
+    <div
+      role={props.mock ? undefined : 'dialog'}
+      aria-modal={props.mock ? undefined : true}
+      aria-labelledby={!props.mock && props.title ? titleId : undefined}
+      aria-label={!props.mock && !props.title ? 'Fenêtre modale' : undefined}
+      className={cn(
+        '@container relative flex w-full max-h-[90svh] flex-col gap-10 rounded-xl bg-white px-0 sm:px-13 py-20 overflow-x-hidden',
+        props.className
+      )}
+    >
+      <button
+        type='button'
+        aria-label='Fermer'
         onClick={props.mock ? undefined : close}
-        className='absolute right-9 top-9 block h-4 w-4 text-grey-950 hover:cursor-pointer'
+        className='absolute right-9 top-9 flex h-4 w-4 items-center justify-center text-grey-950 hover:cursor-pointer'
       >
         <ColoredIcon src={CloseIcon} color='currentColor' />
-      </span>
+      </button>
       {props.title && (
         <div className='flex items-center gap-2 px-5'>
           {props.showStar && (
             <ColoredIcon src={StarPrimary} color='var(--color-brand)' className='w-5 h-5' />
           )}
-          <h2 className='font-heading text-h4 text-grey-800'>{props.title}</h2>
+          <h2 id={titleId} className='font-heading text-h4 text-grey-800'>{props.title}</h2>
         </div>
       )}
       <div className='flex flex-col h-full gap-10 px-5 overflow-y-scroll overscroll-contain scrollbar-none'>{props.children}</div>

@@ -117,7 +117,12 @@ export default function TaskInfo(props: {
             <p className='font-body text-body-s text-grey-600'>{description}</p>
           </div>
           <div className='flex flex-col gap-2 shrink-0 object-center items-center justify-center content-center'>
-            <IconButton icon='see-more' className='w-12 h-12' onClick={props.updateAction ? () => setEditOpen(true) : undefined} />
+            <IconButton
+              icon='see-more'
+              label={`Modifier la tâche « ${title} »`}
+              className='w-12 h-12'
+              onClick={props.updateAction ? () => setEditOpen(true) : undefined}
+            />
           </div>
         </div>
 

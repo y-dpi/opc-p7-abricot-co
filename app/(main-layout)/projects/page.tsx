@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import NextLink from 'next/link';
 
 import { createProject } from '../../../actions/projects';
@@ -6,6 +7,8 @@ import ProjectCard from '../../../components/ProjectCard';
 import { requireSession } from '../../../middleware/session';
 import { getProjects } from '../../../models/projects';
 import toInitials from '../../../utils/toInitials';
+
+export const metadata: Metadata = { title: 'Mes projets' };
 
 // Projects page.
 export default async function ProjectsPage() {

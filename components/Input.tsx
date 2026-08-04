@@ -23,7 +23,7 @@ export default function Input(props: {
   return (
     <label className={cn('flex flex-col gap-2 w-full', props.className)}>
       <span className='font-body text-body-s text-grey-950'>{props.label}</span>
-      <div className='flex items-center gap-2 h-13 px-4 rounded border border-grey-200 bg-white'>
+      <div className='field-shell flex items-center gap-2 h-13 px-4 rounded border border-grey-200 bg-white'>
         <input
           name={props.name}
           type={type}

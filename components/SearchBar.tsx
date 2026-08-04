@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useRef, useState, useTransition } from 'react';
+import { useEffect, useId, useRef, useState, useTransition } from 'react';
 
 import CloseIcon from '../assets/images/close-icon-black.svg';
 import SearchIcon from '../assets/images/search-icon-black.svg';
@@ -29,6 +29,8 @@ export default function SearchBar(props: {
   const [pending, startTransition] = useTransition();
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const hasValue = value.length > 0;
+  const inputId = useId();
+  const placeholder = props.placeholder ?? 'Rechercher';
 
   // Use URL query when it changes on its own but not while
   // one of our own updates is still on its way.
@@ -72,10 +74,14 @@ export default function SearchBar(props: {
 
   return (
     <label className={cn('flex flex-col gap-2 w-full', props.className)}>
-      {props.label && <span className='font-body text-body-s text-grey-950'>{props.label}</span>}
-      <div className='flex items-center gap-2 h-13 px-4 rounded border border-grey-200 bg-white'>
+      {props.label && (
+        <label htmlFor={inputId} className='font-body text-body-s text-grey-950'>{props.label}</label>
+      )}
+      <div className='field-shell flex items-center gap-2 h-13 px-4 rounded border border-grey-200 bg-white'>
         <input
+          id={inputId}
           type='search'
+          aria-label={props.label ? undefined : placeholder}
           value={value}
           onChange={(event) => change(event.target.value)}
           onKeyDown={(event) => {
@@ -85,7 +91,7 @@ export default function SearchBar(props: {
             timer.current = undefined;
             commit(value);
           }}
-          placeholder={props.placeholder ?? 'Rechercher'}
+          placeholder={placeholder}
           className='flex-1 min-w-0 bg-transparent font-body text-body-xs text-grey-600 placeholder:text-grey-600 outline-none [&::-webkit-search-cancel-button]:hidden'
         />
 

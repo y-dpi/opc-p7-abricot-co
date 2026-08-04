@@ -3,13 +3,16 @@ import './globals.css';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Abricot',
+  title: {
+    default: 'Abricot',
+    template: '%s — Abricot',
+  },
   description: 'Gestion de projets et de tâches',
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang='en' className='h-full antialiased'>
+    <html lang='fr' className='h-full antialiased'>
       <body className='min-h-full flex flex-col'>{children}</body>
     </html>
   );

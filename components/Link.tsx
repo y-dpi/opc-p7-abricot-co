@@ -15,7 +15,7 @@ export default function Link(props: {
       aria-disabled={props.disabled}
       className={cn(
         'font-body text-body-s underline',
-        props.disabled ? 'text-grey-400 pointer-events-none' : 'text-brand-dark',
+        props.disabled ? 'text-grey-600 pointer-events-none' : 'text-brand-dark',
         props.className
       )}
     >
