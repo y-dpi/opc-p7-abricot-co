@@ -50,12 +50,6 @@ export default async function ProjectDetailPage({ params, searchParams }: {
     ?? project.members.find((member) => member.userId === user.id)?.role;
   const isAdmin = role === 'ADMIN' || project.ownerId === user.id;
 
-  // Assignee options for the task modals.
-  const memberOptions = project.members.map((member) => ({
-    label: member.user.name ?? member.user.email,
-    value: member.user.id,
-  }));
-
   // Current contributors (owner excluded) shown in the edit-project modal.
   const contributors = project.members.filter((member) => member.userId !== project.ownerId);
   const contributorOptions = contributors.map((member) => ({
@@ -63,6 +57,10 @@ export default async function ProjectDetailPage({ params, searchParams }: {
     value: member.user.id,
   }));
   const contributorIds = contributors.map((member) => member.user.id);
+
+  // Assignee options for the task modals.
+  const ownerLabel = project.owner.name ?? project.owner.email;
+  const memberOptions = [{ label: ownerLabel, value: project.owner.id }, ...contributorOptions];
 
   // Filtered task items.
   const taskItems = tasks.map((task) => ({
@@ -146,22 +144,27 @@ export default async function ProjectDetailPage({ params, searchParams }: {
         <section className='flex flex-wrap flex-col sm:flex-row items-center justify-between gap-6 rounded-xl bg-grey-100 md:px-13 px-5 py-5'>
           <div className='flex flex-col sm:flex-row items-center gap-2 mx-auto sm:mx-0'>
             <h2 className='font-heading text-h5 text-grey-800'>Contributeurs</h2>
-            <span className='font-body text-body-m text-grey-600'>{project.members.length} personnes</span>
+            <span className='font-body text-body-m text-grey-600'>{contributors.length + 1} personnes</span>
           </div>
           <div className='flex flex-wrap items-center justify-center gap-2'>
-            {project.members.map((member) => {
-              const owner = member.userId === project.ownerId;
-              return (
-                <div key={member.id} className='flex items-center gap-1'>
-                  <UserIcon
-                    initials={toInitials(member.user.name, member.user.email)}
-                    size='sm'
-                    className={owner ? 'h-7 w-7' : 'h-7 w-7 bg-grey-200 text-grey-950 ring-2 ring-white'}
-                  />
-                  <Tag color={owner ? 'brand' : 'grey'} label={owner ? 'Propriétaire' : (member.user.name ?? member.user.email)} />
-                </div>
-              );
-            })}
+            <div className='flex items-center gap-1'>
+              <UserIcon
+                initials={toInitials(project.owner.name, project.owner.email)}
+                size='sm'
+                className='h-7 w-7'
+              />
+              <Tag color='brand' label='Propriétaire' />
+            </div>
+            {contributors.map((member) => (
+              <div key={member.id} className='flex items-center gap-1'>
+                <UserIcon
+                  initials={toInitials(member.user.name, member.user.email)}
+                  size='sm'
+                  className='h-7 w-7 bg-grey-200 text-grey-950 ring-2 ring-white'
+                />
+                <Tag color='grey' label={member.user.name ?? member.user.email} />
+              </div>
+            ))}
           </div>
         </section>
 
