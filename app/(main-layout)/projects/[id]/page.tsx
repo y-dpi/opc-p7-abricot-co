@@ -18,7 +18,7 @@ import { SEARCH_PARAM, searchByRelevance, toSearchQuery } from '../../../../util
 import { formatDate, formatDateTime, toDate, toUiStatus } from '../../../../utils/task';
 import toInitials from '../../../../utils/toInitials';
 
-export const metadata: Metadata = { title: 'Projet' };
+export const metadata: Metadata = { title: 'Détails du projet' };
 
 // Single project page.
 export default async function ProjectDetailPage({ params, searchParams }: {
